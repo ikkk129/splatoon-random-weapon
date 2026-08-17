@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="JSONで抽選対象を管理できる、ブラウザ完結型のランダム抽選盤">
+  <title>INK DRAW — Random Loadout</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="ink-glow ink-glow--pink" aria-hidden="true"></div>
+  <div class="ink-glow ink-glow--cyan" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="INK DRAW ホーム">
+      <span class="brand__mark" aria-hidden="true">✦</span>
+      <span><strong>INK DRAW</strong><small>RANDOM LOADOUT BOARD</small></span>
+    </a>
+    <div class="data-actions" aria-label="データ管理">
+      <input id="import-input" type="file" accept="application/json,.json" hidden>
+      <button id="import-button" class="utility-button" type="button">JSONを読み込む</button>
+      <button id="export-button" class="utility-button" type="button">JSONを書き出す</button>
+      <button id="reset-data-button" class="utility-button utility-button--danger" type="button">初期データに戻す</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="control-deck" aria-labelledby="page-title">
+      <div class="control-deck__intro">
+        <p class="eyebrow">RANDOMIZER / LOCAL SESSION</p>
+        <h1 id="page-title">ブキを決める。<br><em>迷いは捨てる。</em></h1>
+        <p class="lead">モードを選んで、中央のボタンを押すだけ。除外設定はこのブラウザに自動保存されます。</p>
+      </div>
+
+      <div class="draw-console">
+        <div class="mode-tabs" role="tablist" aria-label="抽選モード">
+          <button class="mode-tab is-active" type="button" role="tab" aria-selected="true" data-mode="multi">
+            <span>01</span>複数人
+          </button>
+          <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="four">
+            <span>02</span>4人
+          </button>
+          <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="single">
+            <span>03</span>1個
+          </button>
+        </div>
+
+        <div class="draw-console__body">
+          <div id="count-control" class="count-control">
+            <label for="player-count">抽選する人数</label>
+            <div class="count-stepper">
+              <button id="count-down" type="button" aria-label="人数を1人減らす">−</button>
+              <output id="count-output" for="player-count">4</output>
+              <input id="player-count" type="range" min="1" max="10" value="4" aria-label="抽選する人数">
+              <button id="count-up" type="button" aria-label="人数を1人増やす">＋</button>
+            </div>
+          </div>
+
+          <button id="draw-button" class="draw-button" type="button">
+            <span class="draw-button__spark" aria-hidden="true">✦</span>
+            <span><strong>DRAW</strong><small>抽選する</small></span>
+          </button>
+
+          <div class="pool-meter" aria-live="polite">
+            <span>抽選対象</span>
+            <strong><span id="active-count">0</span><small> / <span id="total-count">0</span></small></strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+
+    <section class="results-section" aria-labelledby="results-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">CURRENT PICKS</p>
+          <h2 id="results-title">抽選結果</h2>
+        </div>
+        <button id="exclude-results-button" class="action-link" type="button" hidden disabled>表示中の4項目を除外</button>
+      </div>
+      <div id="results-grid" class="results-grid"></div>
+    </section>
+
+    <section class="items-section" aria-labelledby="items-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">LOADOUT POOL</p>
+          <h2 id="items-title">抽選リスト</h2>
+        </div>
+        <div class="list-actions">
+          <p>クリックで対象／除外を切り替え</p>
+          <button id="clear-exclusions-button" class="action-link" type="button">このモードの除外をすべて解除</button>
+        </div>
+      </div>
+      <div id="category-list" class="category-list" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer><span>INK DRAW</span><p>データは端末内だけに保存されます。</p></footer>
+
+  <dialog id="confirm-dialog">
+    <form method="dialog">
+      <p class="eyebrow">RESET DATA</p>
+      <h2>初期データに戻しますか？</h2>
+      <p>現在の項目と、すべてのモードの除外状態が消去されます。</p>
+      <div class="dialog-actions">
+        <button value="cancel" class="utility-button">キャンセル</button>
+        <button value="confirm" class="dialog-confirm">初期データに戻す</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
