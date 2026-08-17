@@ -1,7 +1,7 @@
 "use strict";
 
 const STORAGE_KEY = "ink-draw-state-v1";
-const DEFAULT_DATA_URL = "weapon-data.json";
+const DEFAULT_DATA_URL = "weapon-list.json";
 const MODES = ["multi", "four", "single"];
 const MODE_LABELS = { multi: "複数人", four: "4人", single: "1個" };
 
@@ -15,6 +15,7 @@ const state = {
 };
 
 const els = {};
+let noticeTimerId = null;
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -44,10 +45,12 @@ function cacheElements() {
     "total-count", "notice", "exclude-results-button", "results-grid", "clear-exclusions-button",
     "category-list", "confirm-dialog"].forEach(id => { els[toCamel(id)] = document.getElementById(id); });
   els.modeTabs = [...document.querySelectorAll(".mode-tab")];
+  els.themeButtons = [...document.querySelectorAll(".theme-preview__button")];
 }
 
 function bindEvents() {
   els.modeTabs.forEach(tab => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
+  els.themeButtons.forEach(button => button.addEventListener("click", () => setPreviewTheme(button.dataset.theme)));
   els.playerCount.addEventListener("input", () => setPlayerCount(Number(els.playerCount.value)));
   els.countDown.addEventListener("click", () => setPlayerCount(state.playerCount - 1));
   els.countUp.addEventListener("click", () => setPlayerCount(state.playerCount + 1));
@@ -60,6 +63,15 @@ function bindEvents() {
   els.resetDataButton.addEventListener("click", () => els.confirmDialog.showModal());
   els.confirmDialog.addEventListener("close", async () => {
     if (els.confirmDialog.returnValue === "confirm") await restoreDefaults();
+  });
+}
+
+function setPreviewTheme(theme) {
+  document.body.dataset.theme = theme;
+  els.themeButtons.forEach(button => {
+    const active = button.dataset.theme === theme;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
   });
 }
 
@@ -143,7 +155,7 @@ function draw() {
     renderItems();
     renderPoolCount();
   }
-  renderResults(true);
+  renderResults();
 }
 
 function excludeCurrentFour() {
@@ -152,8 +164,7 @@ function excludeCurrentFour() {
   saveState();
   renderItems();
   renderPoolCount();
-  els.excludeResultsButton.disabled = true;
-  showNotice("表示中の項目を4人モードの抽選対象から除外しました。", "success");
+  showNotice("表示中のブキをオープンマッチモードの抽選対象から除外しました。", "success", 3000);
 }
 
 function clearCurrentExclusions() {
@@ -198,7 +209,7 @@ function exportJson() {
   anchor.download = `ink-draw-${new Date().toISOString().slice(0, 10)}.json`;
   anchor.click();
   URL.revokeObjectURL(url);
-  showNotice("現在の抽選リストを書き出しました。", "success");
+  showNotice("現在のブキリストを書き出しました。", "success");
 }
 
 async function restoreDefaults() {
@@ -246,28 +257,50 @@ function renderControls() {
   els.excludeResultsButton.hidden = state.mode !== "four";
 }
 
-function renderResults(animate = false) {
+function renderResults() {
   els.resultsGrid.replaceChildren();
   for (let index = 0; index < resultCount(); index++) {
     const card = document.createElement("article");
-    card.className = `result-card${animate ? " is-drawing" : ""}`;
+    card.className = `result-card${state.mode === "single" ? " result-card--single" : ""}`;
     const number = document.createElement("div");
     number.className = "result-card__number";
     number.textContent = String(index + 1).padStart(2, "0");
     const content = document.createElement("div");
     content.className = "result-card__content";
-    const input = document.createElement("input");
-    input.className = "player-name";
-    input.type = "text";
-    input.maxLength = 60;
-    input.value = state.playerNames[index] || `Player ${index + 1}`;
-    input.setAttribute("aria-label", `${index + 1}人目のプレイヤー名`);
-    input.addEventListener("input", () => { state.playerNames[index] = input.value; });
     const result = document.createElement("p");
     result.className = "result-name";
-    result.textContent = findItem(state.results[index])?.name || "—";
-    content.append(input, result);
-    card.append(number, content);
+    const selectedItem = findItem(state.results[index]);
+    result.textContent = selectedItem?.name || "—";
+    if (state.mode !== "single") {
+      const input = document.createElement("input");
+      input.className = "player-name";
+      input.type = "text";
+      input.maxLength = 60;
+      input.value = state.playerNames[index] || `Player ${index + 1}`;
+      input.setAttribute("aria-label", `${index + 1}人目のプレイヤー名`);
+      input.addEventListener("input", () => { state.playerNames[index] = input.value; });
+      content.append(input);
+    }
+    content.append(result);
+    const icon = document.createElement("div");
+    icon.className = "result-card__icon";
+    if (selectedItem) {
+      const image = document.createElement("img");
+      const iconFile = window.WEAPON_ICONS?.[selectedItem.name];
+      image.src = iconFile ? `MainWeapons/${encodeURIComponent(iconFile)}` : "";
+      image.alt = `${selectedItem.name}のアイコン`;
+      if (!iconFile) image.hidden = true;
+      image.addEventListener("error", () => { image.hidden = true; });
+      icon.append(image);
+    }
+    if (state.mode === "single") {
+      const selection = document.createElement("div");
+      selection.className = "result-card__selection";
+      selection.append(content, icon);
+      card.append(selection);
+    } else {
+      card.append(number, content, icon);
+    }
     els.resultsGrid.append(card);
   }
   els.excludeResultsButton.disabled = state.mode !== "four" || state.results.length !== 4 || state.results.some(id => !id);
@@ -312,9 +345,19 @@ function renderPoolCount() {
 
 function findItem(id) { return state.items.find(item => item.id === id); }
 function toCamel(value) { return value.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()); }
-function hideNotice() { els.notice.hidden = true; els.notice.textContent = ""; els.notice.className = "notice"; }
-function showNotice(message, type = "") {
+function hideNotice() {
+  if (noticeTimerId !== null) {
+    clearTimeout(noticeTimerId);
+    noticeTimerId = null;
+  }
+  els.notice.hidden = true;
+  els.notice.textContent = "";
+  els.notice.className = "notice";
+}
+function showNotice(message, type = "", duration = 0) {
+  if (noticeTimerId !== null) clearTimeout(noticeTimerId);
   els.notice.textContent = message;
   els.notice.className = `notice${type ? ` is-${type}` : ""}`;
   els.notice.hidden = false;
+  noticeTimerId = duration > 0 ? window.setTimeout(hideNotice, duration) : null;
 }

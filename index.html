@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="JSONで抽選対象を管理できる、ブラウザ完結型のランダム抽選盤">
-  <title>INK DRAW — Random Loadout</title>
+  <meta name="description" content="JSONで抽選対象を管理できるランダム抽選アプリ">
+  <title>抽選</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,10 +12,16 @@
   <div class="ink-glow ink-glow--cyan" aria-hidden="true"></div>
 
   <header class="site-header">
-    <a class="brand" href="#" aria-label="INK DRAW ホーム">
-      <span class="brand__mark" aria-hidden="true">✦</span>
-      <span><strong>INK DRAW</strong><small>RANDOM LOADOUT BOARD</small></span>
-    </a>
+    <p class="app-title">Splatoonブキルーレット</p>
+    <div class="theme-preview" aria-label="配色プレビュー">
+      <span>配色</span>
+      <button class="theme-preview__button is-active" type="button" data-theme="ink" aria-pressed="true"><i></i>Ink</button>
+      <button class="theme-preview__button" type="button" data-theme="night" aria-pressed="false"><i></i>Night</button>
+      <button class="theme-preview__button" type="button" data-theme="forest" aria-pressed="false"><i></i>Forest</button>
+      <button class="theme-preview__button" type="button" data-theme="blush" aria-pressed="false"><i></i>Blush</button>
+      <button class="theme-preview__button" type="button" data-theme="cream" aria-pressed="false"><i></i>Cream</button>
+      <button class="theme-preview__button" type="button" data-theme="sky" aria-pressed="false"><i></i>Sky</button>
+    </div>
     <div class="data-actions" aria-label="データ管理">
       <input id="import-input" type="file" accept="application/json,.json" hidden>
       <button id="import-button" class="utility-button" type="button">JSONを読み込む</button>
@@ -25,29 +31,23 @@
   </header>
 
   <main>
-    <section class="control-deck" aria-labelledby="page-title">
-      <div class="control-deck__intro">
-        <p class="eyebrow">RANDOMIZER / LOCAL SESSION</p>
-        <h1 id="page-title">ブキを決める。<br><em>迷いは捨てる。</em></h1>
-        <p class="lead">モードを選んで、中央のボタンを押すだけ。除外設定はこのブラウザに自動保存されます。</p>
-      </div>
-
+    <section class="control-deck" aria-label="抽選操作">
       <div class="draw-console">
         <div class="mode-tabs" role="tablist" aria-label="抽選モード">
           <button class="mode-tab is-active" type="button" role="tab" aria-selected="true" data-mode="multi">
-            <span>01</span>複数人
+            プライベートマッチ
           </button>
           <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="four">
-            <span>02</span>4人
+            オープンマッチ
           </button>
           <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="single">
-            <span>03</span>1個
+            ブキ統一
           </button>
         </div>
 
         <div class="draw-console__body">
           <div id="count-control" class="count-control">
-            <label for="player-count">抽選する人数</label>
+            <label for="player-count">プレイヤー数</label>
             <div class="count-stepper">
               <button id="count-down" type="button" aria-label="人数を1人減らす">−</button>
               <output id="count-output" for="player-count">4</output>
@@ -57,12 +57,11 @@
           </div>
 
           <button id="draw-button" class="draw-button" type="button">
-            <span class="draw-button__spark" aria-hidden="true">✦</span>
-            <span><strong>DRAW</strong><small>抽選する</small></span>
+            <strong>抽選する</strong>
           </button>
 
           <div class="pool-meter" aria-live="polite">
-            <span>抽選対象</span>
+            <span>ブキ数</span>
             <strong><span id="active-count">0</span><small> / <span id="total-count">0</span></small></strong>
           </div>
         </div>
@@ -74,10 +73,9 @@
     <section class="results-section" aria-labelledby="results-title">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">CURRENT PICKS</p>
-          <h2 id="results-title">抽選結果</h2>
+          <h2 id="results-title">ブキルーレット結果</h2>
         </div>
-        <button id="exclude-results-button" class="action-link" type="button" hidden disabled>表示中の4項目を除外</button>
+        <button id="exclude-results-button" class="action-link" type="button" hidden disabled>表示中のブキを抽選から外す</button>
       </div>
       <div id="results-grid" class="results-grid"></div>
     </section>
@@ -85,11 +83,10 @@
     <section class="items-section" aria-labelledby="items-title">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">LOADOUT POOL</p>
-          <h2 id="items-title">抽選リスト</h2>
+          <h2 id="items-title">ブキリスト</h2>
         </div>
         <div class="list-actions">
-          <p>クリックで対象／除外を切り替え</p>
+          <p>クリックで抽選対象／除外を切り替え</p>
           <button id="clear-exclusions-button" class="action-link" type="button">このモードの除外をすべて解除</button>
         </div>
       </div>
@@ -97,11 +94,10 @@
     </section>
   </main>
 
-  <footer><span>INK DRAW</span><p>データは端末内だけに保存されます。</p></footer>
+  <footer><p>データは端末内だけに保存されます。</p></footer>
 
   <dialog id="confirm-dialog">
     <form method="dialog">
-      <p class="eyebrow">RESET DATA</p>
       <h2>初期データに戻しますか？</h2>
       <p>現在の項目と、すべてのモードの除外状態が消去されます。</p>
       <div class="dialog-actions">
@@ -111,6 +107,7 @@
     </form>
   </dialog>
 
+  <script src="weapon-icons.js" defer></script>
   <script src="script.js" defer></script>
 </body>
 </html>
