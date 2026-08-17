@@ -311,7 +311,7 @@ function renderResults() {
     if (selectedItem) {
       const image = document.createElement("img");
       const iconFile = window.WEAPON_ICONS?.[selectedItem.name];
-      image.src = iconFile ? `MainWeapons/${encodeURIComponent(iconFile)}` : "";
+      image.src = iconFile ? `_images/MainWeapons/${encodeURIComponent(iconFile)}` : "";
       image.alt = `${selectedItem.name}のアイコン`;
       if (!iconFile) image.hidden = true;
       image.addEventListener("error", () => { image.hidden = true; });
@@ -395,7 +395,7 @@ function preloadWeaponIcons() {
       const image = new Image();
       image.decoding = "async";
       image.fetchPriority = "low";
-      image.src = `MainWeapons/${encodeURIComponent(file)}`;
+      image.src = `_images/MainWeapons/${encodeURIComponent(file)}`;
       iconPreloadCache.push(image);
     });
   };
