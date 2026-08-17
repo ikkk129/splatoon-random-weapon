@@ -4,7 +4,7 @@
     {
       "id": "weapon-1786824349341-0-64baf7",
       "name": "ボールドマーカー",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -14,7 +14,7 @@
     {
       "id": "weapon-1786824349341-1-603885",
       "name": "ボールドマーカーネオ",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -24,7 +24,7 @@
     {
       "id": "weapon-1786824349341-2-1ecf53",
       "name": "わかばシューター",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -34,7 +34,7 @@
     {
       "id": "weapon-1786824349341-3-ba82f7",
       "name": "もみじシューター",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -44,7 +44,7 @@
     {
       "id": "weapon-1786824349341-4-47d1ff",
       "name": "シャープマーカー",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -54,7 +54,7 @@
     {
       "id": "weapon-1786824349341-5-1f31a4",
       "name": "シャープマーカーネオ",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -64,7 +64,7 @@
     {
       "id": "weapon-1786824349341-6-ab2935",
       "name": "シャープマーカーGECK",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -74,7 +74,7 @@
     {
       "id": "weapon-1786824349341-7-adf486",
       "name": "プロモデラーRG",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -84,7 +84,7 @@
     {
       "id": "weapon-1786824349341-8-4b44bd",
       "name": "プロモデラーMG",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -94,7 +94,7 @@
     {
       "id": "weapon-1786824349341-9-c4b85b",
       "name": "プロモデラー彩",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -104,7 +104,7 @@
     {
       "id": "weapon-1786824349341-10-1a63e6",
       "name": "スプラシューター",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -114,7 +114,7 @@
     {
       "id": "weapon-1786824349341-11-4f9e73",
       "name": "スプラシューターコラボ",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -124,7 +124,7 @@
     {
       "id": "weapon-1786824349341-12-3722f0",
       "name": "スプラシューター煌",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -134,7 +134,7 @@
     {
       "id": "weapon-1786824349341-13-86b4eb",
       "name": ".52ガロン",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -144,7 +144,7 @@
     {
       "id": "weapon-1786824349341-14-687baa",
       "name": ".52ガロンデコ",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -154,7 +154,7 @@
     {
       "id": "weapon-1786824349341-15-ff779c",
       "name": "N-ZAP85",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -164,7 +164,7 @@
     {
       "id": "weapon-1786824349341-16-1e6e69",
       "name": "N-ZAP89",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -174,7 +174,7 @@
     {
       "id": "weapon-1786824349341-17-2ab359",
       "name": "プライムシューター",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -184,7 +184,7 @@
     {
       "id": "weapon-1786824349341-18-daa393",
       "name": "プライムシューターコラボ",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -194,7 +194,7 @@
     {
       "id": "weapon-1786824349341-19-19ecb7",
       "name": "プライムシューターFRZN",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -204,7 +204,7 @@
     {
       "id": "weapon-1786824349341-20-b2598d",
       "name": ".96ガロン",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -214,7 +214,7 @@
     {
       "id": "weapon-1786824349341-21-55d691",
       "name": ".96ガロンデコ",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -224,7 +224,7 @@
     {
       "id": "weapon-1786824349341-22-987bc2",
       "name": ".96ガロン爪",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -234,7 +234,7 @@
     {
       "id": "weapon-1786824349341-23-fea7fb",
       "name": "ジェットスイーパー",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -244,7 +244,7 @@
     {
       "id": "weapon-1786824349341-24-0488f2",
       "name": "ジェットスイーパーカスタム",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -254,7 +254,7 @@
     {
       "id": "weapon-1786824349341-25-6bc44c",
       "name": "ジェットスイーパーCOBR",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -264,7 +264,7 @@
     {
       "id": "weapon-1786824349341-26-1e9a19",
       "name": "スペースシューター",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -274,7 +274,7 @@
     {
       "id": "weapon-1786824349341-27-e30101",
       "name": "スペースシューターコラボ",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -284,7 +284,7 @@
     {
       "id": "weapon-1786824349341-28-15be1b",
       "name": "L3リールガン",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -294,7 +294,7 @@
     {
       "id": "weapon-1786824349341-29-944993",
       "name": "L3リールガンD",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -304,7 +304,7 @@
     {
       "id": "weapon-1786824349341-30-a97784",
       "name": "L3リールガン箔",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -314,7 +314,7 @@
     {
       "id": "weapon-1786824349341-31-20425e",
       "name": "H3リールガン",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -324,7 +324,7 @@
     {
       "id": "weapon-1786824349341-32-0221c6",
       "name": "H3リールガンD",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -334,7 +334,7 @@
     {
       "id": "weapon-1786824349341-33-d026e4",
       "name": "H3リールガンSNAK",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -344,7 +344,7 @@
     {
       "id": "weapon-1786824349341-34-d0a7de",
       "name": "ボトルガイザー",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -354,7 +354,7 @@
     {
       "id": "weapon-1786824349341-35-fd8e40",
       "name": "ボトルガイザーフォイル",
-      "category": "シューター系",
+      "category": "シューター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -364,7 +364,7 @@
     {
       "id": "weapon-1786824349341-36-1f80ee",
       "name": "カーボンローラー",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -374,7 +374,7 @@
     {
       "id": "weapon-1786824349341-37-585480",
       "name": "カーボンローラーデコ",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -384,7 +384,7 @@
     {
       "id": "weapon-1786824349341-38-ce30e2",
       "name": "カーボンローラーANGL",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -394,7 +394,7 @@
     {
       "id": "weapon-1786824349341-39-182b36",
       "name": "スプラローラー",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -404,7 +404,7 @@
     {
       "id": "weapon-1786824349341-40-91ba06",
       "name": "スプラローラーコラボ",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -414,7 +414,7 @@
     {
       "id": "weapon-1786824349341-41-ec7baa",
       "name": "ダイナモローラー",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -424,7 +424,7 @@
     {
       "id": "weapon-1786824349341-42-453476",
       "name": "ダイナモローラーテスラ",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -434,7 +434,7 @@
     {
       "id": "weapon-1786824349341-43-790e3e",
       "name": "ダイナモローラー冥",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -444,7 +444,7 @@
     {
       "id": "weapon-1786824349341-44-587e77",
       "name": "ヴァリアブルローラー",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -454,7 +454,7 @@
     {
       "id": "weapon-1786824349341-45-5e7ebe",
       "name": "ヴァリアブルローラーフォイル",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -464,7 +464,7 @@
     {
       "id": "weapon-1786824349341-46-c260ec",
       "name": "ワイドローラー",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -474,7 +474,7 @@
     {
       "id": "weapon-1786824349341-47-e835c4",
       "name": "ワイドローラーコラボ",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -484,7 +484,7 @@
     {
       "id": "weapon-1786824349341-48-e4d24e",
       "name": "ワイドローラー惑",
-      "category": "ローラー系",
+      "category": "ローラー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -494,7 +494,7 @@
     {
       "id": "weapon-1786824349341-49-75fe07",
       "name": "スクイックリンα",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -504,7 +504,7 @@
     {
       "id": "weapon-1786824349341-50-339755",
       "name": "スクイックリンβ",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -514,7 +514,7 @@
     {
       "id": "weapon-1786824349341-51-b2f2b9",
       "name": "スプラチャージャー",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -524,7 +524,7 @@
     {
       "id": "weapon-1786824349341-52-511f44",
       "name": "スプラチャージャーコラボ",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -534,7 +534,7 @@
     {
       "id": "weapon-1786824349341-53-168565",
       "name": "スプラチャージャーFRST",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -544,7 +544,7 @@
     {
       "id": "weapon-1786824349341-54-b77527",
       "name": "スプラスコープ",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -554,7 +554,7 @@
     {
       "id": "weapon-1786824349341-55-9d520f",
       "name": "スプラスコープコラボ",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -564,7 +564,7 @@
     {
       "id": "weapon-1786824349341-56-ac92e4",
       "name": "スプラスコープFRST",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -574,7 +574,7 @@
     {
       "id": "weapon-1786824349341-57-8603c9",
       "name": "リッター4K",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -584,7 +584,7 @@
     {
       "id": "weapon-1786824349341-58-a71535",
       "name": "リッター4Kカスタム",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -594,7 +594,7 @@
     {
       "id": "weapon-1786824349341-59-f95918",
       "name": "4Kスコープ",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -604,7 +604,7 @@
     {
       "id": "weapon-1786824349341-60-8c8b23",
       "name": "4Kスコープカスタム",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -614,7 +614,7 @@
     {
       "id": "weapon-1786824349341-61-8fad94",
       "name": "14式竹筒銃・甲",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -624,7 +624,7 @@
     {
       "id": "weapon-1786824349341-62-4b93f4",
       "name": "14式竹筒銃・乙",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -634,7 +634,7 @@
     {
       "id": "weapon-1786824349341-63-9abbbc",
       "name": "ソイチューバー",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -644,7 +644,7 @@
     {
       "id": "weapon-1786824349341-64-dbe841",
       "name": "ソイチューバーカスタム",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -654,7 +654,7 @@
     {
       "id": "weapon-1786824349341-65-f2b45f",
       "name": "R-PEN/5H",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -664,7 +664,7 @@
     {
       "id": "weapon-1786824349341-66-128434",
       "name": "R-PEN/5B",
-      "category": "チャージャー系",
+      "category": "チャージャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -674,7 +674,7 @@
     {
       "id": "weapon-1786824349341-67-755545",
       "name": "バケットスロッシャー",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -684,7 +684,7 @@
     {
       "id": "weapon-1786824349341-68-b41ef3",
       "name": "バケットスロッシャーデコ",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -694,7 +694,7 @@
     {
       "id": "weapon-1786824349341-69-3b3227",
       "name": "ヒッセン",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -704,7 +704,7 @@
     {
       "id": "weapon-1786824349341-70-4c010d",
       "name": "ヒッセン・ヒュー",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -714,7 +714,7 @@
     {
       "id": "weapon-1786824349341-71-61be46",
       "name": "ヒッセンASH",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -724,7 +724,7 @@
     {
       "id": "weapon-1786824349341-72-297b84",
       "name": "スクリュースロッシャー",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -734,7 +734,7 @@
     {
       "id": "weapon-1786824349341-73-4ee151",
       "name": "スクリュースロッシャーネオ",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -744,7 +744,7 @@
     {
       "id": "weapon-1786824349341-74-65cd6b",
       "name": "オーバーフロッシャー",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -754,7 +754,7 @@
     {
       "id": "weapon-1786824349341-75-e84cab",
       "name": "オーバーフロッシャーデコ",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -764,7 +764,7 @@
     {
       "id": "weapon-1786824349341-76-e16b4d",
       "name": "エクスプロッシャー",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -774,7 +774,7 @@
     {
       "id": "weapon-1786824349341-77-ecf549",
       "name": "エクスプロッシャーカスタム",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -784,7 +784,7 @@
     {
       "id": "weapon-1786824349341-78-1cee1f",
       "name": "モップリン",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -794,7 +794,7 @@
     {
       "id": "weapon-1786824349341-79-d218f5",
       "name": "モップリンD",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -804,7 +804,7 @@
     {
       "id": "weapon-1786824349341-80-243bb1",
       "name": "モップリン角",
-      "category": "スロッシャー系",
+      "category": "スロッシャー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -814,7 +814,7 @@
     {
       "id": "weapon-1786824349341-81-e16c58",
       "name": "スプラスピナー",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -824,7 +824,7 @@
     {
       "id": "weapon-1786824349341-82-2d8d9b",
       "name": "スプラスピナーコラボ",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -834,7 +834,7 @@
     {
       "id": "weapon-1786824349341-83-0c5cbd",
       "name": "スプラスピナーPYTN",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -844,7 +844,7 @@
     {
       "id": "weapon-1786824349341-84-58ad34",
       "name": "バレルスピナー",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -854,7 +854,7 @@
     {
       "id": "weapon-1786824349341-85-19b739",
       "name": "バレルスピナーデコ",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -864,7 +864,7 @@
     {
       "id": "weapon-1786824349341-86-7a8b7b",
       "name": "ハイドラント",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -874,7 +874,7 @@
     {
       "id": "weapon-1786824349341-87-a412c1",
       "name": "ハイドラントカスタム",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -884,7 +884,7 @@
     {
       "id": "weapon-1786824349341-88-13b190",
       "name": "ハイドラント圧",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -894,7 +894,7 @@
     {
       "id": "weapon-1786824349341-89-30bbed",
       "name": "クーゲルシュライバー",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -904,7 +904,7 @@
     {
       "id": "weapon-1786824349341-90-fdd3f6",
       "name": "クーゲルシュライバー・ヒュー",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -914,7 +914,7 @@
     {
       "id": "weapon-1786824349341-91-17e3de",
       "name": "ノーチラス47",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -924,7 +924,7 @@
     {
       "id": "weapon-1786824349341-92-cccaa4",
       "name": "ノーチラス79",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -934,7 +934,7 @@
     {
       "id": "weapon-1786824349341-93-01793a",
       "name": "イグザミナー",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -944,7 +944,7 @@
     {
       "id": "weapon-1786824349341-94-ebbd75",
       "name": "イグザミナー・ヒュー",
-      "category": "スピナー系",
+      "category": "スピナー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -954,7 +954,7 @@
     {
       "id": "weapon-1786824349341-95-3191d2",
       "name": "スパッタリー",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -964,7 +964,7 @@
     {
       "id": "weapon-1786824349341-96-b601f2",
       "name": "スパッタリー・ヒュー",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -974,7 +974,7 @@
     {
       "id": "weapon-1786824349341-97-534726",
       "name": "スパッタリーOWL",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -984,7 +984,7 @@
     {
       "id": "weapon-1786824349341-98-a8697c",
       "name": "スプラマニューバー",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -994,7 +994,7 @@
     {
       "id": "weapon-1786824349341-99-7b2a0c",
       "name": "スプラマニューバーコラボ",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1004,7 +1004,7 @@
     {
       "id": "weapon-1786824349341-100-ac946c",
       "name": "スプラマニューバー耀",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1014,7 +1014,7 @@
     {
       "id": "weapon-1786824349341-101-8285aa",
       "name": "ケルビン525",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1024,7 +1024,7 @@
     {
       "id": "weapon-1786824349341-102-b3f5a8",
       "name": "ケルビン525デコ",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1034,7 +1034,7 @@
     {
       "id": "weapon-1786824349341-103-9a23f7",
       "name": "デュアルスイーパー",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1044,7 +1044,7 @@
     {
       "id": "weapon-1786824349341-104-e43017",
       "name": "デュアルスイーパーカスタム",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1054,7 +1054,7 @@
     {
       "id": "weapon-1786824349341-105-2cf6da",
       "name": "デュアルスイーパー蹄",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1064,7 +1064,7 @@
     {
       "id": "weapon-1786824349341-106-dedb4b",
       "name": "クアッドホッパーブラック",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1074,7 +1074,7 @@
     {
       "id": "weapon-1786824349341-107-ebf7fd",
       "name": "クアッドホッパーホワイト",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1084,7 +1084,7 @@
     {
       "id": "weapon-1786824349341-108-0584b9",
       "name": "ガエンFF",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1094,7 +1094,7 @@
     {
       "id": "weapon-1786824349341-109-699770",
       "name": "ガエンFFカスタム",
-      "category": "マニューバー系",
+      "category": "マニューバー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1104,7 +1104,7 @@
     {
       "id": "weapon-1786824349341-110-d6fa7b",
       "name": "パラシェルター",
-      "category": "シェルター系",
+      "category": "シェルター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1114,7 +1114,7 @@
     {
       "id": "weapon-1786824349341-111-f1d27f",
       "name": "パラシェルターソレーラ",
-      "category": "シェルター系",
+      "category": "シェルター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1124,7 +1124,7 @@
     {
       "id": "weapon-1786824349341-112-ffe271",
       "name": "キャンピングシェルター",
-      "category": "シェルター系",
+      "category": "シェルター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1134,7 +1134,7 @@
     {
       "id": "weapon-1786824349341-113-8e4ada",
       "name": "キャンピングシェルターソレーラ",
-      "category": "シェルター系",
+      "category": "シェルター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1144,7 +1144,7 @@
     {
       "id": "weapon-1786824349341-114-51f773",
       "name": "キャンピングシェルターCREM",
-      "category": "シェルター系",
+      "category": "シェルター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1154,7 +1154,7 @@
     {
       "id": "weapon-1786824349341-115-29914d",
       "name": "スパイガジェット",
-      "category": "シェルター系",
+      "category": "シェルター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1164,7 +1164,7 @@
     {
       "id": "weapon-1786824349341-116-c2f589",
       "name": "スパイガジェットソレーラ",
-      "category": "シェルター系",
+      "category": "シェルター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1174,7 +1174,7 @@
     {
       "id": "weapon-1786824349341-117-8e71ea",
       "name": "スパイガジェット繚",
-      "category": "シェルター系",
+      "category": "シェルター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1184,7 +1184,7 @@
     {
       "id": "weapon-1786824349341-118-102e3a",
       "name": "24式張替傘・甲",
-      "category": "シェルター系",
+      "category": "シェルター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1194,7 +1194,7 @@
     {
       "id": "weapon-1786824349341-119-939d2f",
       "name": "24式張替傘・乙",
-      "category": "シェルター系",
+      "category": "シェルター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1204,7 +1204,7 @@
     {
       "id": "weapon-1786824349341-120-fdfac6",
       "name": "ノヴァブラスター",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1214,7 +1214,7 @@
     {
       "id": "weapon-1786824349341-121-b32fde",
       "name": "ノヴァブラスターネオ",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1224,7 +1224,7 @@
     {
       "id": "weapon-1786824349341-122-46fa99",
       "name": "ホットブラスター",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1234,7 +1234,7 @@
     {
       "id": "weapon-1786824349341-123-afd5f3",
       "name": "ホットブラスターカスタム",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1244,7 +1244,7 @@
     {
       "id": "weapon-1786824349341-124-8210a2",
       "name": "ホットブラスター艶",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1254,7 +1254,7 @@
     {
       "id": "weapon-1786824349341-125-0f09ff",
       "name": "ロングブラスター",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1264,7 +1264,7 @@
     {
       "id": "weapon-1786824349341-126-771ae4",
       "name": "ロングブラスターカスタム",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1274,7 +1274,7 @@
     {
       "id": "weapon-1786824349341-127-0375e2",
       "name": "クラッシュブラスター",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1284,7 +1284,7 @@
     {
       "id": "weapon-1786824349341-128-5e0aca",
       "name": "クラッシュブラスターネオ",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1294,7 +1294,7 @@
     {
       "id": "weapon-1786824349341-129-a08dd8",
       "name": "ラピッドブラスター",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1304,7 +1304,7 @@
     {
       "id": "weapon-1786824349341-130-2df6cc",
       "name": "ラピッドブラスターデコ",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1314,7 +1314,7 @@
     {
       "id": "weapon-1786824349341-131-d5b36c",
       "name": "Rブラスターエリート",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1324,7 +1324,7 @@
     {
       "id": "weapon-1786824349341-132-b9e4b1",
       "name": "Rブラスターエリートデコ",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1334,7 +1334,7 @@
     {
       "id": "weapon-1786824349341-133-1334e2",
       "name": "RブラスターエリートWNTR",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1344,7 +1344,7 @@
     {
       "id": "weapon-1786824349341-134-8aa3c3",
       "name": "S-BLAST92",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1354,7 +1354,7 @@
     {
       "id": "weapon-1786824349341-135-7b6374",
       "name": "S-BLAST91",
-      "category": "ブラスター系",
+      "category": "ブラスター",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1364,7 +1364,7 @@
     {
       "id": "weapon-1786824349341-136-1e6bd7",
       "name": "パブロ",
-      "category": "フデ系",
+      "category": "フデ",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1374,7 +1374,7 @@
     {
       "id": "weapon-1786824349341-137-2ddff2",
       "name": "パブロ・ヒュー",
-      "category": "フデ系",
+      "category": "フデ",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1384,7 +1384,7 @@
     {
       "id": "weapon-1786824349341-138-728760",
       "name": "ホクサイ",
-      "category": "フデ系",
+      "category": "フデ",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1394,7 +1394,7 @@
     {
       "id": "weapon-1786824349341-139-d1e57d",
       "name": "ホクサイ・ヒュー",
-      "category": "フデ系",
+      "category": "フデ",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1404,7 +1404,7 @@
     {
       "id": "weapon-1786824349341-140-d04c67",
       "name": "ホクサイ彗",
-      "category": "フデ系",
+      "category": "フデ",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1414,7 +1414,7 @@
     {
       "id": "weapon-1786824349341-141-3c7b74",
       "name": "フィンセント",
-      "category": "フデ系",
+      "category": "フデ",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1424,7 +1424,7 @@
     {
       "id": "weapon-1786824349341-142-dc5844",
       "name": "フィンセント・ヒュー",
-      "category": "フデ系",
+      "category": "フデ",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1434,7 +1434,7 @@
     {
       "id": "weapon-1786824349341-143-f99943",
       "name": "フィンセントBRNZ",
-      "category": "フデ系",
+      "category": "フデ",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1444,7 +1444,7 @@
     {
       "id": "weapon-1786824349341-144-a0d29e",
       "name": "トライストリンガー",
-      "category": "ストリンガー系",
+      "category": "ストリンガー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1454,7 +1454,7 @@
     {
       "id": "weapon-1786824349341-145-20d4a6",
       "name": "トライストリンガーコラボ",
-      "category": "ストリンガー系",
+      "category": "ストリンガー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1464,7 +1464,7 @@
     {
       "id": "weapon-1786824349341-146-f0a9f9",
       "name": "トライストリンガー燈",
-      "category": "ストリンガー系",
+      "category": "ストリンガー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1474,7 +1474,7 @@
     {
       "id": "weapon-1786824349341-147-7e3fcf",
       "name": "LACT-450",
-      "category": "ストリンガー系",
+      "category": "ストリンガー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1484,7 +1484,7 @@
     {
       "id": "weapon-1786824349341-148-a9792c",
       "name": "LACT-450デコ",
-      "category": "ストリンガー系",
+      "category": "ストリンガー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1494,7 +1494,7 @@
     {
       "id": "weapon-1786824349341-149-df34c6",
       "name": "LACT-450MILK",
-      "category": "ストリンガー系",
+      "category": "ストリンガー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1504,7 +1504,7 @@
     {
       "id": "weapon-1786824349341-150-445c57",
       "name": "フルイドV",
-      "category": "ストリンガー系",
+      "category": "ストリンガー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1514,7 +1514,7 @@
     {
       "id": "weapon-1786824349341-151-a3fd49",
       "name": "フルイドVカスタム",
-      "category": "ストリンガー系",
+      "category": "ストリンガー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1524,7 +1524,7 @@
     {
       "id": "weapon-1786824349341-152-6c4906",
       "name": "ジムワイパー",
-      "category": "ワイパー系",
+      "category": "ワイパー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1534,7 +1534,7 @@
     {
       "id": "weapon-1786824349341-153-b2e9bb",
       "name": "ジムワイパー・ヒュー",
-      "category": "ワイパー系",
+      "category": "ワイパー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1544,7 +1544,7 @@
     {
       "id": "weapon-1786824349341-154-2c85e5",
       "name": "ジムワイパー封",
-      "category": "ワイパー系",
+      "category": "ワイパー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1554,7 +1554,7 @@
     {
       "id": "weapon-1786824349341-155-eb252d",
       "name": "ドライブワイパー",
-      "category": "ワイパー系",
+      "category": "ワイパー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1564,7 +1564,7 @@
     {
       "id": "weapon-1786824349341-156-9f74d3",
       "name": "ドライブワイパーデコ",
-      "category": "ワイパー系",
+      "category": "ワイパー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1574,7 +1574,7 @@
     {
       "id": "weapon-1786824349341-157-059dc4",
       "name": "ドライブワイパーRUST",
-      "category": "ワイパー系",
+      "category": "ワイパー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1584,7 +1584,7 @@
     {
       "id": "weapon-1786824349341-158-c5c09d",
       "name": "デンタルワイパーミント",
-      "category": "ワイパー系",
+      "category": "ワイパー",
       "excluded": {
         "multi": false,
         "four": false,
@@ -1594,7 +1594,7 @@
     {
       "id": "weapon-1786824349341-159-dd9f3e",
       "name": "デンタルワイパースミ",
-      "category": "ワイパー系",
+      "category": "ワイパー",
       "excluded": {
         "multi": false,
         "four": false,

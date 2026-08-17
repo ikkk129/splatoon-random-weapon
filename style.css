@@ -124,8 +124,13 @@ h1 em { color: var(--mode); font-style: italic; }
 .list-actions p { margin: 0; color: var(--muted); font-size: 13px; }
 .category-list { display: grid; gap: 16px; margin-top: 22px; }
 .category-group { background: rgba(255,255,255,.025); border: 1px solid var(--line); }
-.category-group h3 { margin: 0; padding: 16px 18px; border-bottom: 1px solid var(--line); color: var(--paper); font-size: 16px; }
+.category-group__header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+.category-group h3 { margin: 0; color: var(--paper); font-size: 16px; }
 .category-group h3 span { margin-left: 10px; color: var(--muted); font: 700 14px/1 var(--utility); }
+.category-group__actions { display: flex; gap: 7px; }
+.category-action-button { border: 1px solid var(--line); border-radius: 3px; padding: 8px 11px; background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer; }
+.category-action-button:hover:not(:disabled) { border-color: var(--mode); color: var(--mode); }
+.category-action-button:disabled { opacity: .38; cursor: not-allowed; }
 .item-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 18px 18px; }
 .item-chip { border: 1px solid var(--line); background: var(--panel-2); border-radius: 3px; padding: 10px 13px; color: var(--paper); font-size: 14px; font-weight: 600; cursor: pointer; transition: .14s ease; }
 .item-chip:hover { border-color: var(--mode); transform: translateY(-1px); }

@@ -54,7 +54,7 @@ window.WEAPON_ICONS = Object.freeze({
 
   "スクイックリンα": "Classic Squiffer.png",
   "スクイックリンβ": "New Squiffer.png",
-  "スプラチャージャー": "_Splat Charger.png",
+  "スプラチャージャー": "Splat Charger.png",
   "スプラチャージャーコラボ": "ZF Splat Charger.png",
   "スプラチャージャーFRST": "Splat Charger CAM-O.png",
   "スプラスコープ": "Splatterscope.png",

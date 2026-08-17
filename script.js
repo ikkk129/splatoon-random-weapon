@@ -16,6 +16,7 @@ const state = {
 
 const els = {};
 let noticeTimerId = null;
+const iconPreloadCache = [];
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -33,6 +34,7 @@ async function init() {
       saveState();
     }
     renderAll();
+    preloadWeaponIcons();
   } catch (error) {
     showNotice(`データを読み込めませんでした。${error.message}`, "error");
     renderAll();
@@ -42,7 +44,7 @@ async function init() {
 function cacheElements() {
   ["import-input", "import-button", "export-button", "reset-data-button", "count-control",
     "count-down", "count-up", "count-output", "player-count", "draw-button", "active-count",
-    "total-count", "notice", "exclude-results-button", "results-grid", "clear-exclusions-button",
+    "total-count", "notice", "exclude-results-button", "results-grid", "exclude-all-button", "clear-exclusions-button",
     "category-list", "confirm-dialog"].forEach(id => { els[toCamel(id)] = document.getElementById(id); });
   els.modeTabs = [...document.querySelectorAll(".mode-tab")];
   els.themeButtons = [...document.querySelectorAll(".theme-preview__button")];
@@ -56,6 +58,7 @@ function bindEvents() {
   els.countUp.addEventListener("click", () => setPlayerCount(state.playerCount + 1));
   els.drawButton.addEventListener("click", draw);
   els.excludeResultsButton.addEventListener("click", excludeCurrentFour);
+  els.excludeAllButton.addEventListener("click", excludeAllItems);
   els.clearExclusionsButton.addEventListener("click", clearCurrentExclusions);
   els.importButton.addEventListener("click", () => els.importInput.click());
   els.importInput.addEventListener("change", importJson);
@@ -173,6 +176,27 @@ function clearCurrentExclusions() {
   renderItems();
   renderPoolCount();
   hideNotice();
+}
+
+function excludeAllItems() {
+  state.items.forEach(item => { item.excluded[state.mode] = true; });
+  saveState();
+  renderItems();
+  renderPoolCount();
+}
+
+function excludeCategory(category) {
+  state.items.filter(item => item.category === category).forEach(item => { item.excluded[state.mode] = true; });
+  saveState();
+  renderItems();
+  renderPoolCount();
+}
+
+function includeCategory(category) {
+  state.items.filter(item => item.category === category).forEach(item => { item.excluded[state.mode] = false; });
+  saveState();
+  renderItems();
+  renderPoolCount();
 }
 
 function toggleItem(id) {
@@ -316,11 +340,31 @@ function renderItems() {
   groups.forEach((items, category) => {
     const section = document.createElement("section");
     section.className = "category-group";
+    const header = document.createElement("div");
+    header.className = "category-group__header";
     const heading = document.createElement("h3");
-    heading.textContent = category;
+    heading.textContent = category.replace(/系$/, "");
     const count = document.createElement("span");
     count.textContent = `${items.filter(item => !item.excluded[state.mode]).length} / ${items.length}`;
     heading.append(count);
+    const actions = document.createElement("div");
+    actions.className = "category-group__actions";
+    const includeButton = document.createElement("button");
+    includeButton.type = "button";
+    includeButton.className = "category-action-button";
+    includeButton.textContent = "すべて含める";
+    includeButton.disabled = items.every(item => !item.excluded[state.mode]);
+    includeButton.setAttribute("aria-label", `${category}のブキをすべて抽選対象に含める`);
+    includeButton.addEventListener("click", () => includeCategory(category));
+    const excludeButton = document.createElement("button");
+    excludeButton.type = "button";
+    excludeButton.className = "category-action-button";
+    excludeButton.textContent = "すべて除外";
+    excludeButton.disabled = items.every(item => item.excluded[state.mode]);
+    excludeButton.setAttribute("aria-label", `${category}のブキをすべて除外`);
+    excludeButton.addEventListener("click", () => excludeCategory(category));
+    actions.append(includeButton, excludeButton);
+    header.append(heading, actions);
     const chips = document.createElement("div");
     chips.className = "item-chips";
     items.forEach(item => {
@@ -333,7 +377,7 @@ function renderItems() {
       button.addEventListener("click", () => toggleItem(item.id));
       chips.append(button);
     });
-    section.append(heading, chips);
+    section.append(header, chips);
     els.categoryList.append(section);
   });
 }
@@ -344,6 +388,20 @@ function renderPoolCount() {
 }
 
 function findItem(id) { return state.items.find(item => item.id === id); }
+function preloadWeaponIcons() {
+  const start = () => {
+    const files = [...new Set(Object.values(window.WEAPON_ICONS || {}))];
+    files.forEach(file => {
+      const image = new Image();
+      image.decoding = "async";
+      image.fetchPriority = "low";
+      image.src = `MainWeapons/${encodeURIComponent(file)}`;
+      iconPreloadCache.push(image);
+    });
+  };
+  if ("requestIdleCallback" in window) window.requestIdleCallback(start, { timeout: 1200 });
+  else window.setTimeout(start, 200);
+}
 function toCamel(value) { return value.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()); }
 function hideNotice() {
   if (noticeTimerId !== null) {
