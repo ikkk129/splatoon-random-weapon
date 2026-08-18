@@ -4,7 +4,7 @@ Splatoon 3のブキをランダムに抽選する、PC向けの静的Webアプ�
 
 プレイヤーごとにブキを抽選する「プライベートマッチ」、4人分をまとめて抽選する「オープンマッチ」、全員が使うブキを1つ抽選する「ブキ統一」の3モードを利用できます。
 
-公開サイト: https://ikkk129.github.io/splatoon-roulette-app/
+公開サイト: https://ikkk129.github.io/splatoon-random-weapon/
 
 ## ユーザー向け
 
