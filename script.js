@@ -1,14 +1,13 @@
 "use strict";
 
-const STORAGE_KEY = "ink-draw-state-v1";
+const STORAGE_KEY = "ink-draw-state-v2";
 const DEFAULT_DATA_URL = "weapon-list.json";
-const MODES = ["multi", "four", "single"];
-const MODE_LABELS = { multi: "複数人", four: "4人", single: "1個" };
+const MODES = ["private", "open", "unity"];
 
 const state = {
   version: 1,
   items: [],
-  mode: "multi",
+  mode: "private",
   playerCount: 4,
   results: [],
   playerNames: []
@@ -35,6 +34,7 @@ async function init() {
     }
     renderAll();
     preloadWeaponIcons();
+    if (document.fonts?.ready) document.fonts.ready.then(() => window.setTimeout(fitResultNames, 50));
   } catch (error) {
     showNotice(`データを読み込めませんでした。${error.message}`, "error");
     renderAll();
@@ -57,7 +57,7 @@ function bindEvents() {
   els.countDown.addEventListener("click", () => setPlayerCount(state.playerCount - 1));
   els.countUp.addEventListener("click", () => setPlayerCount(state.playerCount + 1));
   els.drawButton.addEventListener("click", draw);
-  els.excludeResultsButton.addEventListener("click", excludeCurrentFour);
+  els.excludeResultsButton.addEventListener("click", excludeCurrentOpen);
   els.excludeAllButton.addEventListener("click", excludeAllItems);
   els.clearExclusionsButton.addEventListener("click", clearCurrentExclusions);
   els.importButton.addEventListener("click", () => els.importInput.click());
@@ -67,6 +67,7 @@ function bindEvents() {
   els.confirmDialog.addEventListener("close", async () => {
     if (els.confirmDialog.returnValue === "confirm") await restoreDefaults();
   });
+  window.addEventListener("resize", scheduleFitResultNames);
 }
 
 function setPreviewTheme(theme) {
@@ -86,9 +87,9 @@ async function loadDefaultData() {
 
 function validateAndNormalize(raw) {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("JSONのルートはオブジェクトにしてください。");
-  const sourceItems = Array.isArray(raw.items) ? raw.items : raw.version === undefined && Array.isArray(raw.weapons) ? raw.weapons : null;
+  const sourceItems = Array.isArray(raw.items) ? raw.items : null;
   if (!sourceItems || sourceItems.length === 0) throw new Error("items配列に1件以上の項目が必要です。");
-  if (raw.version !== undefined && raw.version !== 1) throw new Error("対応しているversionは1だけです。");
+  if (raw.version !== 1) throw new Error("対応しているversionは1だけです。");
 
   const ids = new Set();
   const items = sourceItems.map((item, index) => {
@@ -99,18 +100,21 @@ function validateAndNormalize(raw) {
     if (ids.has(item.id)) throw new Error(`id「${item.id}」が重複しています。`);
     ids.add(item.id);
 
-    let excluded;
-    if (typeof item.excluded === "boolean") {
-      excluded = { multi: item.excluded, four: item.excluded, single: item.excluded };
-    } else {
-      if (!item.excluded || typeof item.excluded !== "object" || MODES.some(mode => typeof item.excluded[mode] !== "boolean")) {
-        throw new Error(`${index + 1}件目のexcludedにはmulti・four・singleの真偽値が必要です。`);
-      }
-      excluded = Object.fromEntries(MODES.map(mode => [mode, item.excluded[mode]]));
-    }
+    const excluded = normalizeExcluded(item.excluded, index);
     return { id: item.id, name: item.name.trim(), category: item.category.trim(), excluded };
   });
   return { version: 1, items };
+}
+
+function normalizeExcluded(rawExcluded, index) {
+  if (!rawExcluded || typeof rawExcluded !== "object" || Array.isArray(rawExcluded)) {
+    throw new Error(`${index + 1}件目のexcludedにはprivate・open・unityの真偽値が必要です。`);
+  }
+
+  if (MODES.some(mode => typeof rawExcluded[mode] !== "boolean")) {
+    throw new Error(`${index + 1}件目のexcludedにはprivate・open・unityの真偽値が必要です。`);
+  }
+  return Object.fromEntries(MODES.map(mode => [mode, rawExcluded[mode]]));
 }
 
 function setMode(mode) {
@@ -140,7 +144,7 @@ function setPlayerCount(count) {
 }
 
 function resultCount() {
-  return state.mode === "multi" ? state.playerCount : state.mode === "four" ? 4 : 1;
+  return state.mode === "private" ? state.playerCount : state.mode === "open" ? 4 : 1;
 }
 
 function draw() {
@@ -151,9 +155,9 @@ function draw() {
   }
   hideNotice();
   state.results = Array.from({ length: resultCount() }, () => pool[Math.floor(Math.random() * pool.length)].id);
-  if (state.mode === "single") {
+  if (state.mode === "unity") {
     const selected = findItem(state.results[0]);
-    selected.excluded.single = true;
+    selected.excluded.unity = true;
     saveState();
     renderItems();
     renderPoolCount();
@@ -161,9 +165,9 @@ function draw() {
   renderResults();
 }
 
-function excludeCurrentFour() {
-  if (state.mode !== "four" || state.results.some(id => !id)) return;
-  new Set(state.results).forEach(id => { const item = findItem(id); if (item) item.excluded.four = true; });
+function excludeCurrentOpen() {
+  if (state.mode !== "open" || state.results.some(id => !id)) return;
+  new Set(state.results).forEach(id => { const item = findItem(id); if (item) item.excluded.open = true; });
   saveState();
   renderItems();
   renderPoolCount();
@@ -239,7 +243,7 @@ function exportJson() {
 async function restoreDefaults() {
   try {
     state.items = (await loadDefaultData()).items;
-    state.mode = "multi";
+    state.mode = "private";
     state.playerCount = 4;
     resetTransientState();
     saveState();
@@ -273,19 +277,19 @@ function renderControls() {
     tab.classList.toggle("is-active", active);
     tab.setAttribute("aria-selected", String(active));
   });
-  els.countControl.hidden = state.mode !== "multi";
+  els.countControl.hidden = state.mode !== "private";
   els.playerCount.value = state.playerCount;
   els.countOutput.value = state.playerCount;
   els.countDown.disabled = state.playerCount === 1;
   els.countUp.disabled = state.playerCount === 10;
-  els.excludeResultsButton.hidden = state.mode !== "four";
+  els.excludeResultsButton.hidden = state.mode !== "open";
 }
 
 function renderResults() {
   els.resultsGrid.replaceChildren();
   for (let index = 0; index < resultCount(); index++) {
     const card = document.createElement("article");
-    card.className = `result-card${state.mode === "single" ? " result-card--single" : ""}`;
+    card.className = `result-card${state.mode === "unity" ? " result-card--unity" : ""}`;
     const number = document.createElement("div");
     number.className = "result-card__number";
     number.textContent = String(index + 1).padStart(2, "0");
@@ -295,7 +299,7 @@ function renderResults() {
     result.className = "result-name";
     const selectedItem = findItem(state.results[index]);
     result.textContent = selectedItem?.name || "—";
-    if (state.mode !== "single") {
+    if (state.mode !== "unity") {
       const input = document.createElement("input");
       input.className = "player-name";
       input.type = "text";
@@ -317,7 +321,7 @@ function renderResults() {
       image.addEventListener("error", () => { image.hidden = true; });
       icon.append(image);
     }
-    if (state.mode === "single") {
+    if (state.mode === "unity") {
       const selection = document.createElement("div");
       selection.className = "result-card__selection";
       selection.append(content, icon);
@@ -327,7 +331,38 @@ function renderResults() {
     }
     els.resultsGrid.append(card);
   }
-  els.excludeResultsButton.disabled = state.mode !== "four" || state.results.length !== 4 || state.results.some(id => !id);
+  els.excludeResultsButton.disabled = state.mode !== "open" || state.results.length !== 4 || state.results.some(id => !id);
+  fitResultNames();
+  // Web fonts can finish loading just after the cards are painted; measure once more then.
+  window.setTimeout(fitResultNames, 350);
+}
+
+// Keep weapon names legible while preventing long names from escaping their result card.
+// The base size comes from CSS; only cards that need more room are condensed.
+function fitResultNames() {
+  els.resultsGrid.querySelectorAll(".result-name").forEach(name => {
+    const baseSize = Number.parseFloat(name.dataset.baseSize) || Number.parseFloat(getComputedStyle(name).fontSize);
+    if (!baseSize || name.clientWidth <= 0) return;
+    name.dataset.baseSize = String(baseSize);
+
+    const minimumSize = Math.max(18, baseSize * 0.62);
+    // Keep an already-condensed size so a later font/layout measurement never grows the text.
+    let size = Number.parseFloat(name.style.fontSize) || baseSize;
+    while (name.scrollWidth > name.clientWidth + 1 && size > minimumSize) {
+      size -= 1;
+      name.style.fontSize = `${size}px`;
+    }
+    name.classList.toggle("is-condensed", size < baseSize);
+  });
+}
+
+let fitResultNamesFrame = null;
+function scheduleFitResultNames() {
+  if (fitResultNamesFrame !== null) cancelAnimationFrame(fitResultNamesFrame);
+  fitResultNamesFrame = requestAnimationFrame(() => {
+    fitResultNamesFrame = null;
+    fitResultNames();
+  });
 }
 
 function renderItems() {

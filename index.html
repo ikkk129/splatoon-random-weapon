@@ -3,19 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="抽選対象を管理できるSplatoonランダムブキルーレット">
-  <title>Splatoonブキルーレット</title>
+  <meta name="description" content="Splatoonランダムブキルーレット">
+  <title>Splatoon Random Weapon</title>
   <link rel="icon" type="image/png" href="_images/MainWeapons/Splattershot.png">
-  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap">
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
   <div class="ink-glow ink-glow--pink" aria-hidden="true"></div>
   <div class="ink-glow ink-glow--cyan" aria-hidden="true"></div>
 
   <header class="site-header">
-    <p class="app-title">Splatoonブキルーレット</p>
+    <p class="app-title">
+      <img class="app-title__icon" src="_images/top-icon.png" alt="" aria-hidden="true">
+      <span>Splatoon Random Weapon</span>
+    </p>
     <div class="theme-preview" aria-label="配色プレビュー">
-      <span>配色</span>
       <button class="theme-preview__button is-active" type="button" data-theme="ink" aria-pressed="true"><i></i>Ink</button>
       <button class="theme-preview__button" type="button" data-theme="night" aria-pressed="false"><i></i>Night</button>
       <button class="theme-preview__button" type="button" data-theme="forest" aria-pressed="false"><i></i>Forest</button>
@@ -23,25 +28,19 @@
       <button class="theme-preview__button" type="button" data-theme="cream" aria-pressed="false"><i></i>Cream</button>
       <button class="theme-preview__button" type="button" data-theme="sky" aria-pressed="false"><i></i>Sky</button>
     </div>
-    <div class="data-actions" aria-label="データ管理">
-      <input id="import-input" type="file" accept="application/json,.json" hidden>
-      <button id="import-button" class="utility-button" type="button">JSONを読み込む</button>
-      <button id="export-button" class="utility-button" type="button">JSONを書き出す</button>
-      <button id="reset-data-button" class="utility-button utility-button--danger" type="button">初期データに戻す</button>
-    </div>
   </header>
 
   <main>
     <section class="control-deck" aria-label="抽選操作">
       <div class="draw-console">
         <div class="mode-tabs" role="tablist" aria-label="抽選モード">
-          <button class="mode-tab is-active" type="button" role="tab" aria-selected="true" data-mode="multi">
+          <button class="mode-tab is-active" type="button" role="tab" aria-selected="true" data-mode="private">
             プライベートマッチ
           </button>
-          <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="four">
+          <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="open">
             オープンマッチ
           </button>
-          <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="single">
+          <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="unity">
             ブキ統一
           </button>
         </div>
@@ -58,7 +57,7 @@
           </div>
 
           <button id="draw-button" class="draw-button" type="button">
-            <strong>抽選する</strong>
+            <strong>スタート</strong>
           </button>
 
           <div class="pool-meter" aria-live="polite">
@@ -96,6 +95,13 @@
     </section>
   </main>
 
+  <div class="data-actions" aria-label="データ管理">
+    <input id="import-input" type="file" accept="application/json,.json" hidden>
+    <button id="import-button" class="utility-button" type="button">JSONを読み込む</button>
+    <button id="export-button" class="utility-button" type="button">JSONを書き出す</button>
+    <button id="reset-data-button" class="utility-button utility-button--danger" type="button">初期データに戻す</button>
+  </div>
+
   <footer><p>データは端末内だけに保存されます。</p></footer>
 
   <dialog id="confirm-dialog">
@@ -110,6 +116,6 @@
   </dialog>
 
   <script src="weapon-icons.js" defer></script>
-  <script src="script.js" defer></script>
+  <script src="script.js?v=5" defer></script>
 </body>
 </html>
