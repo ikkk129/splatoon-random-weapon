@@ -9,17 +9,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap">
-  <link rel="stylesheet" href="style.css?v=33">
+  <link rel="stylesheet" href="style.css?v=40">
 </head>
 <body>
   <div class="ink-glow ink-glow--pink" aria-hidden="true"></div>
   <div class="ink-glow ink-glow--cyan" aria-hidden="true"></div>
 
+  <button id="sidebar-collapse-button" class="sidebar-toggle-button" type="button" aria-expanded="true" aria-controls="app-sidebar" aria-label="サイドバーを閉じる">
+    <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"></rect><path d="M9 5v14"></path></svg>
+  </button>
+
   <div class="app-shell">
-    <aside class="app-sidebar" aria-label="抽選操作と設定">
-      <div class="sidebar-brand">
+    <aside id="app-sidebar" class="app-sidebar" aria-label="抽選操作と設定">
+      <div class="sidebar-inner">
+        <div class="sidebar-brand">
         <img class="app-title__icon" src="_images/top-icon.png?v=2" alt="Splatoonブキルーレット">
-      </div>
+        </div>
 
       <section class="sidebar-section" aria-labelledby="mode-title">
         <h2 id="mode-title" class="sidebar-heading">
@@ -44,9 +49,11 @@
           <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
           プレイヤー数
         </h2>
-        <div class="count-stepper">
+        <div class="count-stepper" data-direction="idle">
           <button id="count-down" type="button" aria-label="人数を1人減らす">−</button>
-          <output id="count-output" for="player-count">4</output>
+          <div class="count-value">
+            <output id="count-output" for="player-count" aria-live="polite" aria-atomic="true">4</output>
+          </div>
           <input id="player-count" type="range" min="2" max="10" value="4" aria-label="抽選する人数">
           <button id="count-up" type="button" aria-label="人数を1人増やす">＋</button>
         </div>
@@ -99,6 +106,7 @@
         </button>
       </section>
 
+      </div>
     </aside>
 
     <main>
@@ -164,6 +172,6 @@
   </dialog>
 
   <script src="weapon-icons.js?v=3" defer></script>
-  <script src="script.js?v=16" defer></script>
+  <script src="script.js?v=18" defer></script>
 </body>
 </html>

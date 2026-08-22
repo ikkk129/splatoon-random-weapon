@@ -14,6 +14,7 @@ const state = {
 
 const els = {};
 let noticeTimerId = null;
+let countAnimationTimerId = null;
 const collapsedCategories = new Set();
 
 document.addEventListener("DOMContentLoaded", init);
@@ -37,7 +38,7 @@ async function init() {
 }
 
 function cacheElements() {
-  ["import-input", "import-button", "export-button", "reset-exclusions-button", "reset-data-button", "data-menu-button", "data-menu", "count-control", "excluded-count",
+  ["sidebar-collapse-button", "import-input", "import-button", "export-button", "reset-exclusions-button", "reset-data-button", "data-menu-button", "data-menu", "count-control", "excluded-count",
     "count-down", "count-up", "count-output", "player-count", "draw-button", "active-count",
     "total-count", "notice", "exclude-results-button", "results-grid", "exclude-all-button", "clear-exclusions-button",
     "items-toggle-button", "category-list", "confirm-dialog"].forEach(id => { els[toCamel(id)] = document.getElementById(id); });
@@ -45,6 +46,7 @@ function cacheElements() {
 }
 
 function bindEvents() {
+  els.sidebarCollapseButton.addEventListener("click", toggleSidebar);
   els.modeTabs.forEach(tab => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
   els.playerCount.addEventListener("input", () => setPlayerCount(Number(els.playerCount.value)));
   els.countDown.addEventListener("click", () => setPlayerCount(state.playerCount - 1));
@@ -79,6 +81,17 @@ function bindEvents() {
     }
   });
   window.addEventListener("resize", scheduleFitResultNames);
+}
+
+function toggleSidebar() {
+  const appShell = document.querySelector(".app-shell");
+  const willCollapse = !appShell.classList.contains("is-sidebar-collapsed");
+  if (willCollapse) closeDataMenu();
+  appShell.classList.toggle("is-sidebar-collapsed", willCollapse);
+  els.sidebarCollapseButton.classList.toggle("is-collapsed", willCollapse);
+  els.sidebarCollapseButton.setAttribute("aria-expanded", String(!willCollapse));
+  els.sidebarCollapseButton.setAttribute("aria-label", willCollapse ? "サイドバーを開く" : "サイドバーを閉じる");
+  els.sidebarCollapseButton.querySelector(".ui-icon").setAttribute("aria-hidden", "true");
 }
 
 function toggleDataMenu() {
@@ -223,12 +236,14 @@ function setPlayerCount(count) {
   const maximum = state.mode === "open" ? 4 : 10;
   const next = Math.max(minimum, Math.min(maximum, count));
   if (next === state.playerCount) return;
+  const previous = state.playerCount;
   const oldNames = state.playerNames;
   state.playerCount = next;
   state.results = Array(next).fill(null);
   state.playerNames = Array.from({ length: next }, (_, index) => oldNames[index] || "");
   hideNotice();
   renderControls();
+  animatePlayerCount(previous, next);
   renderResults();
 }
 
@@ -383,10 +398,31 @@ function renderControls() {
   els.playerCount.min = String(minimum);
   els.playerCount.max = String(maximum);
   els.playerCount.value = state.playerCount;
-  els.countOutput.value = state.playerCount;
+  els.countOutput.value = String(state.playerCount);
+  els.countOutput.textContent = String(state.playerCount);
   els.countDown.disabled = state.playerCount <= minimum;
   els.countUp.disabled = state.playerCount >= maximum;
   els.excludeResultsButton.hidden = state.mode !== "open";
+}
+
+function animatePlayerCount(previous, next) {
+  if (previous === next) return;
+  const output = els.countOutput;
+  const stepper = output.closest(".count-stepper");
+  if (!stepper) return;
+
+  const direction = next > previous ? "up" : "down";
+  stepper.dataset.direction = direction;
+  output.classList.remove("is-count-changing", "is-count-increasing", "is-count-decreasing");
+  void output.offsetWidth;
+  output.classList.add("is-count-changing", direction === "up" ? "is-count-increasing" : "is-count-decreasing");
+
+  if (countAnimationTimerId !== null) clearTimeout(countAnimationTimerId);
+  countAnimationTimerId = window.setTimeout(() => {
+    output.classList.remove("is-count-changing", "is-count-increasing", "is-count-decreasing");
+    stepper.dataset.direction = "idle";
+    countAnimationTimerId = null;
+  }, 360);
 }
 
 function renderResults() {
@@ -585,7 +621,7 @@ function hideNotice() {
   els.notice.textContent = "";
   els.notice.className = "notice";
 }
-function showNotice(message, type = "", duration = 0) {
+function showNotice(message, type = "", duration = type === "success" ? 3000 : 0) {
   if (noticeTimerId !== null) clearTimeout(noticeTimerId);
   els.notice.textContent = message;
   els.notice.className = `notice${type ? ` is-${type}` : ""}`;
