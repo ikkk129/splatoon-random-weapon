@@ -2,7 +2,7 @@
 
 Splatoon 3のブキをランダムに選ぶ、PC向けの非公式ファンツールです。ブラウザだけで動作し、専用サーバーやアカウントは必要ありません。
 
-公開サイト: [https://ikkk129.github.io/splatoon-roulette-app/](https://ikkk129.github.io/splatoon-roulette-app/)
+公開サイト: [https://ikkk129.github.io/splatoon-random-weapon/](https://ikkk129.github.io/splatoon-random-weapon/)
 
 ## 使い方
 
