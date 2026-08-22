@@ -4,105 +4,153 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Splatoonランダムブキルーレット">
-  <title>Splatoon Random Weapon</title>
-  <link rel="icon" type="image/png" href="_images/MainWeapons/Splattershot.png">
+  <title>Splatoonブキルーレット</title>
+  <link rel="icon" type="image/png" href="_images/MainWeapons/splattershot.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=33">
 </head>
 <body>
   <div class="ink-glow ink-glow--pink" aria-hidden="true"></div>
   <div class="ink-glow ink-glow--cyan" aria-hidden="true"></div>
 
-  <header class="site-header">
-    <p class="app-title">
-      <img class="app-title__icon" src="_images/top-icon.png" alt="" aria-hidden="true">
-      <span>Splatoon Random Weapon</span>
-    </p>
-    <div class="theme-preview" aria-label="配色プレビュー">
-      <button class="theme-preview__button is-active" type="button" data-theme="ink" aria-pressed="true"><i></i>Ink</button>
-      <button class="theme-preview__button" type="button" data-theme="night" aria-pressed="false"><i></i>Night</button>
-      <button class="theme-preview__button" type="button" data-theme="forest" aria-pressed="false"><i></i>Forest</button>
-      <button class="theme-preview__button" type="button" data-theme="blush" aria-pressed="false"><i></i>Blush</button>
-      <button class="theme-preview__button" type="button" data-theme="cream" aria-pressed="false"><i></i>Cream</button>
-      <button class="theme-preview__button" type="button" data-theme="sky" aria-pressed="false"><i></i>Sky</button>
-    </div>
-  </header>
+  <div class="app-shell">
+    <aside class="app-sidebar" aria-label="抽選操作と設定">
+      <div class="sidebar-brand">
+        <img class="app-title__icon" src="_images/top-icon.png?v=2" alt="Splatoonブキルーレット">
+      </div>
 
-  <main>
-    <section class="control-deck" aria-label="抽選操作">
-      <div class="draw-console">
+      <section class="sidebar-section" aria-labelledby="mode-title">
+        <h2 id="mode-title" class="sidebar-heading">
+          <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"></path><path d="m3 7 2 2 4-4"></path><path d="M13 6h8"></path><path d="M13 12h8"></path><path d="M13 18h8"></path></svg>
+          モード
+        </h2>
         <div class="mode-tabs" role="tablist" aria-label="抽選モード">
           <button class="mode-tab is-active" type="button" role="tab" aria-selected="true" data-mode="private">
-            プライベートマッチ
+            <span class="mode-tab__copy"><strong>プライベートマッチ</strong><small>10人までみんなでランダム</small></span>
           </button>
           <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="open">
-            オープンマッチ
+            <span class="mode-tab__copy"><strong>オープンマッチ</strong><small>チーム全員でランダム</small></span>
           </button>
           <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="unity">
-            ブキ統一
+            <span class="mode-tab__copy"><strong>ブキ統一</strong><small>チーム全員で同じブキ</small></span>
           </button>
         </div>
+      </section>
 
-        <div class="draw-console__body">
-          <div id="count-control" class="count-control">
-            <label for="player-count">プレイヤー数</label>
-            <div class="count-stepper">
-              <button id="count-down" type="button" aria-label="人数を1人減らす">−</button>
-              <output id="count-output" for="player-count">4</output>
-              <input id="player-count" type="range" min="1" max="10" value="4" aria-label="抽選する人数">
-              <button id="count-up" type="button" aria-label="人数を1人増やす">＋</button>
+      <section id="count-control" class="sidebar-section count-control" aria-labelledby="count-title">
+        <h2 id="count-title" class="sidebar-heading">
+          <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
+          プレイヤー数
+        </h2>
+        <div class="count-stepper">
+          <button id="count-down" type="button" aria-label="人数を1人減らす">−</button>
+          <output id="count-output" for="player-count">4</output>
+          <input id="player-count" type="range" min="2" max="10" value="4" aria-label="抽選する人数">
+          <button id="count-up" type="button" aria-label="人数を1人増やす">＋</button>
+        </div>
+      </section>
+
+      <section class="sidebar-section sidebar-status" aria-labelledby="status-title">
+        <h2 id="status-title" class="sidebar-heading">
+          <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3v18h18"></path><path d="m7 16 4-4 3 3 5-6"></path></svg>
+          ステータス
+        </h2>
+        <div class="status-card" aria-live="polite">
+          <div class="status-row">
+            <span class="status-row__label"><i class="status-dot" aria-hidden="true"></i>抽選対象</span>
+            <strong><span id="active-count">0</span><small> / <span id="total-count">0</span>件</small></strong>
+          </div>
+          <div class="status-row">
+            <span class="status-row__label"><i class="status-dot status-dot--excluded" aria-hidden="true"></i>除外中</span>
+            <strong><span id="excluded-count">0</span><small>件</small></strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="sidebar-section sidebar-tools" aria-label="データ管理">
+        <div id="data-menu" class="data-menu" hidden>
+          <p class="data-menu__title">データ管理</p>
+          <input id="import-input" type="file" accept="application/json,.json" hidden>
+          <button id="import-button" class="data-menu__item" type="button">
+            <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12"></path><path d="m7 8 5-5 5 5"></path><path d="M5 21h14a2 2 0 0 0 2-2v-4"></path><path d="M3 15v4a2 2 0 0 0 2 2"></path></svg>
+            JSONを読み込む
+          </button>
+          <button id="export-button" class="data-menu__item" type="button">
+            <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 15V3"></path><path d="m17 10-5 5-5-5"></path><path d="M5 21h14a2 2 0 0 0 2-2v-4"></path><path d="M3 15v4a2 2 0 0 0 2 2"></path></svg>
+            JSONを書き出す
+          </button>
+          <button id="reset-exclusions-button" class="data-menu__item" type="button">
+            <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
+            除外をリセット
+          </button>
+          <button id="reset-data-button" class="data-menu__item data-menu__item--danger" type="button">
+            <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="m19 6-1 14H6L5 6"></path><path d="M10 11v5"></path><path d="M14 11v5"></path></svg>
+            初期データに戻す
+          </button>
+        </div>
+        <button id="data-menu-button" class="sidebar-menu-button" type="button" aria-expanded="false" aria-controls="data-menu">
+          <span class="sidebar-menu-button__label">
+            <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg>
+            データ管理
+          </span>
+          <svg class="ui-icon sidebar-menu-button__arrow" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+      </section>
+
+    </aside>
+
+    <main>
+      <header class="content-header">
+        <div>
+          <p class="content-kicker">Splatoon / RANDOM WEAPON</p>
+          <h1>ブキルーレット</h1>
+          <p class="content-lead">プレイヤーごとにランダムでブキを決めます</p>
+        </div>
+        <img class="draw-callout" src="_images/yajirusi.png?v=2" alt="" aria-hidden="true">
+      </header>
+
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+
+      <section class="results-section" aria-labelledby="results-title">
+        <div class="section-heading">
+          <h2 id="results-title">今回のブキ</h2>
+          <div class="section-heading__actions">
+            <button id="exclude-results-button" class="action-link" type="button" hidden disabled>表示中のブキを抽選から外す</button>
+            <button id="draw-button" class="draw-button" type="button">
+              <strong>抽選する</strong>
+              <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><rect width="12" height="12" x="2" y="10" rx="2" ry="2"></rect><path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"></path><path d="M6 18h.01"></path><path d="M10 14h.01"></path><path d="M15 6h.01"></path><path d="M18 9h.01"></path></svg>
+            </button>
+          </div>
+        </div>
+        <div id="results-grid" class="results-grid"></div>
+      </section>
+
+      <section id="items-section" class="items-section" aria-labelledby="items-title">
+        <div class="section-heading">
+          <div>
+            <h2 id="items-title">ブキリスト</h2>
+            <p class="section-description">ブキをクリックして抽選対象／除外を切り替え</p>
+          </div>
+          <div class="items-section__controls">
+            <div class="list-actions">
+              <button id="exclude-all-button" class="action-link" type="button">このモードのブキをすべて除外</button>
+              <button id="clear-exclusions-button" class="action-link" type="button">このモードの除外をすべて解除</button>
             </div>
-          </div>
-
-          <button id="draw-button" class="draw-button" type="button">
-            <strong>スタート</strong>
-          </button>
-
-          <div class="pool-meter" aria-live="polite">
-            <span>ブキ数</span>
-            <strong><span id="active-count">0</span><small> / <span id="total-count">0</span></small></strong>
+            <button id="items-toggle-button" class="items-toggle-button" type="button" aria-expanded="false" aria-controls="items-content" aria-label="全カテゴリを開く">
+              <svg class="ui-icon items-toggle-button__arrow" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
           </div>
         </div>
-      </div>
-    </section>
-
-    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
-
-    <section class="results-section" aria-labelledby="results-title">
-      <div class="section-heading">
-        <div>
-          <h2 id="results-title">ブキルーレット結果</h2>
+        <div id="items-content" class="items-section__content" aria-hidden="false">
+          <div id="category-list" class="category-list" aria-live="polite"></div>
         </div>
-        <button id="exclude-results-button" class="action-link" type="button" hidden disabled>表示中のブキを抽選から外す</button>
-      </div>
-      <div id="results-grid" class="results-grid"></div>
-    </section>
+      </section>
 
-    <section class="items-section" aria-labelledby="items-title">
-      <div class="section-heading">
-        <div>
-          <h2 id="items-title">ブキリスト</h2>
-        </div>
-        <div class="list-actions">
-          <p>クリックで抽選対象／除外を切り替え</p>
-          <button id="exclude-all-button" class="action-link" type="button">このモードのブキをすべて除外</button>
-          <button id="clear-exclusions-button" class="action-link" type="button">このモードの除外をすべて解除</button>
-        </div>
-      </div>
-      <div id="category-list" class="category-list" aria-live="polite"></div>
-    </section>
-  </main>
-
-  <div class="data-actions" aria-label="データ管理">
-    <input id="import-input" type="file" accept="application/json,.json" hidden>
-    <button id="import-button" class="utility-button" type="button">JSONを読み込む</button>
-    <button id="export-button" class="utility-button" type="button">JSONを書き出す</button>
-    <button id="reset-data-button" class="utility-button utility-button--danger" type="button">初期データに戻す</button>
+      <footer><p>データは端末内だけに保存されます。</p></footer>
+    </main>
   </div>
-
-  <footer><p>データは端末内だけに保存されます。</p></footer>
 
   <dialog id="confirm-dialog">
     <form method="dialog">
@@ -115,7 +163,7 @@
     </form>
   </dialog>
 
-  <script src="weapon-icons.js" defer></script>
-  <script src="script.js?v=5" defer></script>
+  <script src="weapon-icons.js?v=3" defer></script>
+  <script src="script.js?v=16" defer></script>
 </body>
 </html>

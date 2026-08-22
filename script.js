@@ -5,7 +5,6 @@ const DEFAULT_DATA_URL = "weapon-list.json";
 const MODES = ["private", "open", "unity"];
 
 const state = {
-  version: 1,
   items: [],
   mode: "private",
   playerCount: 4,
@@ -15,7 +14,7 @@ const state = {
 
 const els = {};
 let noticeTimerId = null;
-const iconPreloadCache = [];
+const collapsedCategories = new Set();
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -24,17 +23,13 @@ async function init() {
   bindEvents();
   resetTransientState();
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      state.items = validateAndNormalize(parsed).items;
-    } else {
-      state.items = (await loadDefaultData()).items;
-      saveState();
-    }
+    const initial = await loadInitialData();
+    state.items = initial.data.items;
+    if (initial.shouldSave) saveState();
+    collapseAllCategories();
     renderAll();
-    preloadWeaponIcons();
     if (document.fonts?.ready) document.fonts.ready.then(() => window.setTimeout(fitResultNames, 50));
+    if (initial.notice) showNotice(initial.notice, "error", 5000);
   } catch (error) {
     showNotice(`データを読み込めませんでした。${error.message}`, "error");
     renderAll();
@@ -42,17 +37,15 @@ async function init() {
 }
 
 function cacheElements() {
-  ["import-input", "import-button", "export-button", "reset-data-button", "count-control",
+  ["import-input", "import-button", "export-button", "reset-exclusions-button", "reset-data-button", "data-menu-button", "data-menu", "count-control", "excluded-count",
     "count-down", "count-up", "count-output", "player-count", "draw-button", "active-count",
     "total-count", "notice", "exclude-results-button", "results-grid", "exclude-all-button", "clear-exclusions-button",
-    "category-list", "confirm-dialog"].forEach(id => { els[toCamel(id)] = document.getElementById(id); });
+    "items-toggle-button", "category-list", "confirm-dialog"].forEach(id => { els[toCamel(id)] = document.getElementById(id); });
   els.modeTabs = [...document.querySelectorAll(".mode-tab")];
-  els.themeButtons = [...document.querySelectorAll(".theme-preview__button")];
 }
 
 function bindEvents() {
   els.modeTabs.forEach(tab => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
-  els.themeButtons.forEach(button => button.addEventListener("click", () => setPreviewTheme(button.dataset.theme)));
   els.playerCount.addEventListener("input", () => setPlayerCount(Number(els.playerCount.value)));
   els.countDown.addEventListener("click", () => setPlayerCount(state.playerCount - 1));
   els.countUp.addEventListener("click", () => setPlayerCount(state.playerCount + 1));
@@ -60,29 +53,119 @@ function bindEvents() {
   els.excludeResultsButton.addEventListener("click", excludeCurrentOpen);
   els.excludeAllButton.addEventListener("click", excludeAllItems);
   els.clearExclusionsButton.addEventListener("click", clearCurrentExclusions);
+  els.itemsToggleButton.addEventListener("click", toggleItemsSection);
+  els.dataMenuButton.addEventListener("click", toggleDataMenu);
   els.importButton.addEventListener("click", () => els.importInput.click());
   els.importInput.addEventListener("change", importJson);
-  els.exportButton.addEventListener("click", exportJson);
-  els.resetDataButton.addEventListener("click", () => els.confirmDialog.showModal());
+  els.exportButton.addEventListener("click", () => {
+    closeDataMenu();
+    exportJson();
+  });
+  els.resetExclusionsButton.addEventListener("click", resetAllExclusions);
+  els.resetDataButton.addEventListener("click", () => {
+    closeDataMenu();
+    els.confirmDialog.showModal();
+  });
   els.confirmDialog.addEventListener("close", async () => {
     if (els.confirmDialog.returnValue === "confirm") await restoreDefaults();
+  });
+  document.addEventListener("click", event => {
+    if (!els.dataMenu.hidden && !els.dataMenu.contains(event.target) && !els.dataMenuButton.contains(event.target)) closeDataMenu();
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !els.dataMenu.hidden) {
+      closeDataMenu();
+      els.dataMenuButton.focus();
+    }
   });
   window.addEventListener("resize", scheduleFitResultNames);
 }
 
-function setPreviewTheme(theme) {
-  document.body.dataset.theme = theme;
-  els.themeButtons.forEach(button => {
-    const active = button.dataset.theme === theme;
-    button.classList.toggle("is-active", active);
-    button.setAttribute("aria-pressed", String(active));
+function toggleDataMenu() {
+  const willOpen = els.dataMenu.hidden;
+  els.dataMenu.hidden = !willOpen;
+  els.dataMenuButton.setAttribute("aria-expanded", String(willOpen));
+}
+
+function closeDataMenu() {
+  els.dataMenu.hidden = true;
+  els.dataMenuButton.setAttribute("aria-expanded", "false");
+}
+
+function collapseAllCategories() {
+  collapsedCategories.clear();
+  state.items.forEach(item => collapsedCategories.add(item.category));
+}
+
+function setCategoryGroupCollapsed(section, content, toggleButton, category, categoryLabel, collapsed) {
+  section.classList.toggle("is-collapsed", collapsed);
+  content.inert = collapsed;
+  content.setAttribute("aria-hidden", String(collapsed));
+  toggleButton.setAttribute("aria-expanded", String(!collapsed));
+  toggleButton.setAttribute("aria-label", `${categoryLabel}${collapsed ? "を開く" : "を閉じる"}`);
+  if (collapsed) collapsedCategories.add(category);
+  else {
+    collapsedCategories.delete(category);
+    loadDeferredImages(content);
+  }
+}
+
+function loadDeferredImages(container) {
+  container.querySelectorAll("img[data-src]").forEach(image => {
+    image.src = image.dataset.src;
+    delete image.dataset.src;
   });
+}
+
+function updateCategoryToggleSummary() {
+  const groups = [...els.categoryList.querySelectorAll(".category-group")];
+  const allCollapsed = groups.length > 0 && groups.every(group => group.classList.contains("is-collapsed"));
+  els.itemsToggleButton.setAttribute("aria-expanded", String(!allCollapsed));
+  els.itemsToggleButton.setAttribute("aria-label", allCollapsed ? "全カテゴリを開く" : "全カテゴリを閉じる");
+}
+
+function toggleItemsSection() {
+  const groups = [...els.categoryList.querySelectorAll(".category-group")];
+  const shouldCollapse = groups.some(group => !group.classList.contains("is-collapsed"));
+  groups.forEach(section => {
+    const category = section.dataset.category;
+    const categoryLabel = section.dataset.categoryLabel || category.replace(/系$/, "");
+    const content = section.querySelector(".category-group__content");
+    const toggleButton = section.querySelector(".category-toggle-button");
+    setCategoryGroupCollapsed(section, content, toggleButton, category, categoryLabel, shouldCollapse);
+  });
+  updateCategoryToggleSummary();
 }
 
 async function loadDefaultData() {
   const response = await fetch(DEFAULT_DATA_URL, { cache: "no-store" });
   if (!response.ok) throw new Error("初期JSONが見つかりません。");
   return validateAndNormalize(await response.json());
+}
+
+async function loadInitialData() {
+  let stored;
+  try {
+    stored = localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return {
+      data: await loadDefaultData(),
+      shouldSave: false,
+      notice: "ブラウザの保存データを利用できないため、初期データで起動しました。"
+    };
+  }
+
+  if (!stored) return { data: await loadDefaultData(), shouldSave: true, notice: "" };
+
+  try {
+    return { data: validateAndNormalize(JSON.parse(stored)), shouldSave: false, notice: "" };
+  } catch {
+    return {
+      data: await loadDefaultData(),
+      shouldSave: true,
+      notice: "保存データを読み込めなかったため、初期データで復旧しました。"
+    };
+  }
 }
 
 function validateAndNormalize(raw) {
@@ -97,11 +180,12 @@ function validateAndNormalize(raw) {
     for (const key of ["id", "name", "category"]) {
       if (typeof item[key] !== "string" || !item[key].trim()) throw new Error(`${index + 1}件目の${key}は空でない文字列にしてください。`);
     }
-    if (ids.has(item.id)) throw new Error(`id「${item.id}」が重複しています。`);
-    ids.add(item.id);
+    const id = item.id.trim();
+    if (ids.has(id)) throw new Error(`id「${id}」が重複しています。`);
+    ids.add(id);
 
     const excluded = normalizeExcluded(item.excluded, index);
-    return { id: item.id, name: item.name.trim(), category: item.category.trim(), excluded };
+    return { id, name: item.name.trim(), category: item.category.trim(), excluded };
   });
   return { version: 1, items };
 }
@@ -120,6 +204,9 @@ function normalizeExcluded(rawExcluded, index) {
 function setMode(mode) {
   if (!MODES.includes(mode) || mode === state.mode) return;
   state.mode = mode;
+  const modeMinimum = 2;
+  const modeMaximum = mode === "open" ? 4 : 10;
+  state.playerCount = Math.max(modeMinimum, Math.min(modeMaximum, state.playerCount));
   resetTransientState();
   hideNotice();
   renderAll();
@@ -128,23 +215,25 @@ function setMode(mode) {
 function resetTransientState() {
   const count = resultCount();
   state.results = Array(count).fill(null);
-  state.playerNames = Array.from({ length: count }, (_, index) => `Player ${index + 1}`);
+  state.playerNames = Array(count).fill("");
 }
 
 function setPlayerCount(count) {
-  const next = Math.max(1, Math.min(10, count));
+  const minimum = 2;
+  const maximum = state.mode === "open" ? 4 : 10;
+  const next = Math.max(minimum, Math.min(maximum, count));
   if (next === state.playerCount) return;
   const oldNames = state.playerNames;
   state.playerCount = next;
   state.results = Array(next).fill(null);
-  state.playerNames = Array.from({ length: next }, (_, index) => oldNames[index] || `Player ${index + 1}`);
+  state.playerNames = Array.from({ length: next }, (_, index) => oldNames[index] || "");
   hideNotice();
   renderControls();
   renderResults();
 }
 
 function resultCount() {
-  return state.mode === "private" ? state.playerCount : state.mode === "open" ? 4 : 1;
+  return state.mode === "unity" ? 1 : state.playerCount;
 }
 
 function draw() {
@@ -182,6 +271,15 @@ function clearCurrentExclusions() {
   hideNotice();
 }
 
+function resetAllExclusions() {
+  state.items.forEach(item => MODES.forEach(mode => { item.excluded[mode] = false; }));
+  saveState();
+  renderItems();
+  renderPoolCount();
+  closeDataMenu();
+  showNotice("すべてのモードの除外をリセットしました。", "success", 3000);
+}
+
 function excludeAllItems() {
   state.items.forEach(item => { item.excluded[state.mode] = true; });
   saveState();
@@ -216,10 +314,12 @@ async function importJson(event) {
   const file = event.target.files[0];
   event.target.value = "";
   if (!file) return;
+  closeDataMenu();
   try {
     if (file.size > 5 * 1024 * 1024) throw new Error("ファイルサイズは5MB以下にしてください。");
     const validated = validateAndNormalize(JSON.parse(await file.text()));
     state.items = validated.items;
+    collapseAllCategories();
     resetTransientState();
     saveState();
     renderAll();
@@ -245,6 +345,7 @@ async function restoreDefaults() {
     state.items = (await loadDefaultData()).items;
     state.mode = "private";
     state.playerCount = 4;
+    collapseAllCategories();
     resetTransientState();
     saveState();
     renderAll();
@@ -263,7 +364,6 @@ function saveState() {
 }
 
 function renderAll() {
-  document.body.dataset.mode = state.mode;
   renderControls();
   renderResults();
   renderItems();
@@ -277,11 +377,15 @@ function renderControls() {
     tab.classList.toggle("is-active", active);
     tab.setAttribute("aria-selected", String(active));
   });
-  els.countControl.hidden = state.mode !== "private";
+  els.countControl.hidden = state.mode === "unity";
+  const minimum = 2;
+  const maximum = state.mode === "open" ? 4 : 10;
+  els.playerCount.min = String(minimum);
+  els.playerCount.max = String(maximum);
   els.playerCount.value = state.playerCount;
   els.countOutput.value = state.playerCount;
-  els.countDown.disabled = state.playerCount === 1;
-  els.countUp.disabled = state.playerCount === 10;
+  els.countDown.disabled = state.playerCount <= minimum;
+  els.countUp.disabled = state.playerCount >= maximum;
   els.excludeResultsButton.hidden = state.mode !== "open";
 }
 
@@ -290,9 +394,6 @@ function renderResults() {
   for (let index = 0; index < resultCount(); index++) {
     const card = document.createElement("article");
     card.className = `result-card${state.mode === "unity" ? " result-card--unity" : ""}`;
-    const number = document.createElement("div");
-    number.className = "result-card__number";
-    number.textContent = String(index + 1).padStart(2, "0");
     const content = document.createElement("div");
     content.className = "result-card__content";
     const result = document.createElement("p");
@@ -304,7 +405,8 @@ function renderResults() {
       input.className = "player-name";
       input.type = "text";
       input.maxLength = 60;
-      input.value = state.playerNames[index] || `Player ${index + 1}`;
+      input.value = state.playerNames[index] || "";
+      input.placeholder = `Player ${index + 1}`;
       input.setAttribute("aria-label", `${index + 1}人目のプレイヤー名`);
       input.addEventListener("input", () => { state.playerNames[index] = input.value; });
       content.append(input);
@@ -327,11 +429,11 @@ function renderResults() {
       selection.append(content, icon);
       card.append(selection);
     } else {
-      card.append(number, content, icon);
+      card.append(content, icon);
     }
     els.resultsGrid.append(card);
   }
-  els.excludeResultsButton.disabled = state.mode !== "open" || state.results.length !== 4 || state.results.some(id => !id);
+  els.excludeResultsButton.disabled = state.mode !== "open" || state.results.length !== state.playerCount || state.results.some(id => !id);
   fitResultNames();
   // Web fonts can finish loading just after the cards are painted; measure once more then.
   window.setTimeout(fitResultNames, 350);
@@ -372,16 +474,23 @@ function renderItems() {
     if (!groups.has(item.category)) groups.set(item.category, []);
     groups.get(item.category).push(item);
   });
+  let categoryIndex = 0;
   groups.forEach((items, category) => {
+    const categoryLabel = category.replace(/系$/, "");
+    const isCollapsed = collapsedCategories.has(category);
     const section = document.createElement("section");
-    section.className = "category-group";
+    section.className = `category-group${isCollapsed ? " is-collapsed" : ""}`;
+    section.dataset.category = category;
+    section.dataset.categoryLabel = categoryLabel;
     const header = document.createElement("div");
     header.className = "category-group__header";
     const heading = document.createElement("h3");
-    heading.textContent = category.replace(/系$/, "");
+    heading.textContent = categoryLabel;
     const count = document.createElement("span");
     count.textContent = `${items.filter(item => !item.excluded[state.mode]).length} / ${items.length}`;
     heading.append(count);
+    const controls = document.createElement("div");
+    controls.className = "category-group__controls";
     const actions = document.createElement("div");
     actions.className = "category-group__actions";
     const includeButton = document.createElement("button");
@@ -399,44 +508,73 @@ function renderItems() {
     excludeButton.setAttribute("aria-label", `${category}のブキをすべて除外`);
     excludeButton.addEventListener("click", () => excludeCategory(category));
     actions.append(includeButton, excludeButton);
-    header.append(heading, actions);
+    const contentId = `category-content-${categoryIndex++}`;
+    const toggleButton = document.createElement("button");
+    toggleButton.type = "button";
+    toggleButton.className = "category-toggle-button";
+    toggleButton.setAttribute("aria-expanded", String(!isCollapsed));
+    toggleButton.setAttribute("aria-controls", contentId);
+    toggleButton.setAttribute("aria-label", `${categoryLabel}を${isCollapsed ? "開く" : "閉じる"}`);
+    toggleButton.innerHTML = '<svg class="ui-icon category-toggle-button__arrow" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
+    controls.append(actions, toggleButton);
+    header.append(heading, controls);
     const chips = document.createElement("div");
     chips.className = "item-chips";
     items.forEach(item => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = `item-chip${item.excluded[state.mode] ? " is-excluded" : ""}`;
-      button.textContent = item.name;
+      const icon = document.createElement("span");
+      icon.className = "item-chip__icon";
+      const iconFile = window.WEAPON_ICONS?.[item.name];
+      if (iconFile) {
+        const image = document.createElement("img");
+        const iconUrl = `_images/MainWeapons/${encodeURIComponent(iconFile)}`;
+        if (isCollapsed) image.dataset.src = iconUrl;
+        else image.src = iconUrl;
+        image.alt = "";
+        image.loading = "lazy";
+        image.decoding = "async";
+        image.addEventListener("error", () => { image.hidden = true; });
+        icon.append(image);
+      }
+      const name = document.createElement("span");
+      name.className = "item-chip__name";
+      name.textContent = item.name;
+      button.append(icon, name);
       button.setAttribute("aria-pressed", String(item.excluded[state.mode]));
       button.setAttribute("aria-label", `${item.name}を${item.excluded[state.mode] ? "抽選対象に戻す" : "除外する"}`);
       button.addEventListener("click", () => toggleItem(item.id));
       chips.append(button);
     });
-    section.append(header, chips);
+    const content = document.createElement("div");
+    content.id = contentId;
+    content.className = "category-group__content";
+    content.setAttribute("aria-hidden", String(isCollapsed));
+    content.inert = isCollapsed;
+    const contentInner = document.createElement("div");
+    contentInner.className = "category-group__content-inner";
+    contentInner.append(chips);
+    content.append(contentInner);
+    toggleButton.addEventListener("click", () => {
+      const willOpen = section.classList.contains("is-collapsed");
+      setCategoryGroupCollapsed(section, content, toggleButton, category, categoryLabel, !willOpen);
+      updateCategoryToggleSummary();
+    });
+    section.append(header, content);
     els.categoryList.append(section);
   });
+  updateCategoryToggleSummary();
 }
 
 function renderPoolCount() {
-  els.activeCount.textContent = state.items.filter(item => !item.excluded[state.mode]).length;
+  const activeCount = state.items.filter(item => !item.excluded[state.mode]).length;
+  els.activeCount.textContent = activeCount;
   els.totalCount.textContent = state.items.length;
+  els.excludedCount.textContent = state.items.length - activeCount;
 }
 
 function findItem(id) { return state.items.find(item => item.id === id); }
-function preloadWeaponIcons() {
-  const start = () => {
-    const files = [...new Set(Object.values(window.WEAPON_ICONS || {}))];
-    files.forEach(file => {
-      const image = new Image();
-      image.decoding = "async";
-      image.fetchPriority = "low";
-      image.src = `_images/MainWeapons/${encodeURIComponent(file)}`;
-      iconPreloadCache.push(image);
-    });
-  };
-  if ("requestIdleCallback" in window) window.requestIdleCallback(start, { timeout: 1200 });
-  else window.setTimeout(start, 200);
-}
 function toCamel(value) { return value.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()); }
 function hideNotice() {
   if (noticeTimerId !== null) {
