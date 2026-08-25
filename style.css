@@ -162,6 +162,10 @@ body::before {
   100% { transform: translateX(0) rotate(1080deg); }
 }
 
+@keyframes draw-button-spin {
+  to { transform: rotate(360deg); }
+}
+
 .sidebar-status { padding-bottom: 18px; }
 .status-card { display: grid; gap: 0; border: 0; border-radius: 0; padding: 0; background: transparent; }
 .status-row { min-height: 46px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 0; border-radius: 0; padding: 5px 0; background: transparent; }
@@ -170,6 +174,18 @@ body::before {
 .status-dot--excluded { background: #e28a35; box-shadow: 0 0 0 4px #fff0dc; }
 .status-row strong { color: var(--paper); font-size: 24px; line-height: 1; font-variant-numeric: tabular-nums; }
 .status-row small { margin-left: 3px; color: var(--muted); font-size: 14px; font-weight: 600; }
+
+.sidebar-settings { padding-bottom: 18px; }
+.setting-toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; }
+.setting-toggle__copy { min-width: 0; display: grid; gap: 3px; }
+.setting-toggle__copy strong { color: var(--paper); font-size: 12px; font-weight: 800; line-height: 1.3; }
+.setting-toggle__copy small { color: var(--muted); font-size: 10px; line-height: 1.3; }
+.setting-toggle input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.setting-toggle__switch { position: relative; width: 42px; height: 24px; flex: 0 0 42px; border-radius: 999px; background: #d2d2d2; transition: background .18s ease, box-shadow .18s ease; }
+.setting-toggle__switch::after { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(38, 55, 75, .2); content: ""; transition: transform .18s ease; }
+.setting-toggle input:checked + .setting-toggle__switch { background: var(--accent); }
+.setting-toggle input:checked + .setting-toggle__switch::after { transform: translateX(18px); }
+.setting-toggle input:focus-visible + .setting-toggle__switch { box-shadow: 0 0 0 3px #dceaff; }
 
 .sidebar-tools { position: relative; margin-top: auto; padding-bottom: 58px; }
 .sidebar-menu-button {
@@ -294,11 +310,17 @@ h1 { color: var(--paper); font-size: clamp(34px, 4vw, 48px); font-weight: 900; l
 }
 .draw-button:hover { transform: translateY(-2px); filter: brightness(1.04); box-shadow: 0 10px 22px rgba(47, 128, 237, .27); }
 .draw-button:active { transform: translateY(1px); }
+.draw-button.is-drawing { cursor: default; filter: brightness(1.02); }
+.draw-button.is-drawing:hover { transform: none; filter: brightness(1.02); box-shadow: 0 8px 18px rgba(47, 128, 237, .22); }
+.draw-button.is-drawing .ui-icon { animation: draw-button-spin .42s linear infinite; }
 .draw-button strong { font-size: 17px; font-weight: 800; letter-spacing: .04em; }
 .draw-button .ui-icon { width: 19px; height: 19px; flex-basis: 19px; color: #d5dde5; transform: rotate(0deg); transform-origin: 50% 50%; transition: transform .24s cubic-bezier(.22, 1, .36, 1); }
 .draw-button:hover .ui-icon { transform: rotate(14deg); }
+.draw-button.is-drawing .ui-icon,
+.draw-button.is-drawing:hover .ui-icon { transform: none; }
 
 .results-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+.results-grid.is-drawing .result-card { border-color: #b6d0f6; box-shadow: 0 8px 20px rgba(47, 128, 237, .13); }
 .result-card {
   position: relative;
   width: 100%;

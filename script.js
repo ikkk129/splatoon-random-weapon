@@ -1,7 +1,10 @@
 "use strict";
 
 const STORAGE_KEY = "ink-draw-state-v2";
+const SETTINGS_STORAGE_KEY = "ink-draw-settings-v1";
 const DEFAULT_DATA_URL = "weapon-list.json";
+const DRAW_SHUFFLE_COUNT = 7;
+const DRAW_SHUFFLE_INTERVAL = 100;
 const MODES = ["private", "open", "unity"];
 
 const state = {
@@ -9,18 +12,22 @@ const state = {
   mode: "private",
   playerCount: 4,
   results: [],
-  playerNames: []
+  playerNames: [],
+  settings: { drawAnimation: false }
 };
 
 const els = {};
 let noticeTimerId = null;
 let countAnimationTimerId = null;
 let sidebarIconRollTimerId = null;
+let drawShuffleTimerId = null;
+let isDrawing = false;
 const collapsedCategories = new Set();
 
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
+  state.settings = loadSettings();
   cacheElements();
   bindEvents();
   applyResponsiveSidebarState();
@@ -40,7 +47,7 @@ async function init() {
 }
 
 function cacheElements() {
-  ["sidebar-collapse-button", "sidebar-brand-icon-button", "import-input", "import-button", "export-button", "reset-exclusions-button", "reset-data-button", "data-menu-button", "data-menu", "count-control", "excluded-count",
+  ["sidebar-collapse-button", "sidebar-brand-icon-button", "draw-animation-toggle", "import-input", "import-button", "export-button", "reset-exclusions-button", "reset-data-button", "data-menu-button", "data-menu", "count-control", "excluded-count",
     "count-down", "count-up", "count-output", "player-count", "draw-button", "active-count",
     "total-count", "notice", "exclude-results-button", "results-grid", "exclude-all-button", "clear-exclusions-button",
     "items-toggle-button", "category-list", "confirm-dialog", "exclude-all-dialog"].forEach(id => { els[toCamel(id)] = document.getElementById(id); });
@@ -50,6 +57,10 @@ function cacheElements() {
 function bindEvents() {
   els.sidebarCollapseButton.addEventListener("click", toggleSidebar);
   els.sidebarBrandIconButton.addEventListener("click", rollSidebarIcon);
+  els.drawAnimationToggle.addEventListener("change", () => {
+    state.settings.drawAnimation = els.drawAnimationToggle.checked;
+    saveSettings();
+  });
   els.modeTabs.forEach(tab => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
   els.playerCount.addEventListener("input", () => setPlayerCount(Number(els.playerCount.value)));
   els.countDown.addEventListener("click", () => setPlayerCount(state.playerCount - 1));
@@ -214,6 +225,25 @@ async function loadInitialData() {
   }
 }
 
+function loadSettings() {
+  try {
+    const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (!stored) return { drawAnimation: false };
+    const parsed = JSON.parse(stored);
+    return { drawAnimation: parsed?.drawAnimation !== false };
+  } catch {
+    return { drawAnimation: false };
+  }
+}
+
+function saveSettings() {
+  try {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(state.settings));
+  } catch {
+    showNotice("設定を保存できませんでした。", "error");
+  }
+}
+
 function validateAndNormalize(raw) {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("JSONのルートはオブジェクトにしてください。");
   const sourceItems = Array.isArray(raw.items) ? raw.items : null;
@@ -248,7 +278,7 @@ function normalizeExcluded(rawExcluded, index) {
 }
 
 function setMode(mode) {
-  if (!MODES.includes(mode) || mode === state.mode) return;
+  if (isDrawing || !MODES.includes(mode) || mode === state.mode) return;
   state.mode = mode;
   const modeMinimum = 2;
   const modeMaximum = mode === "open" ? 4 : 10;
@@ -265,6 +295,7 @@ function resetTransientState() {
 }
 
 function setPlayerCount(count) {
+  if (isDrawing) return;
   const minimum = 2;
   const maximum = state.mode === "open" ? 4 : 10;
   const next = Math.max(minimum, Math.min(maximum, count));
@@ -285,13 +316,27 @@ function resultCount() {
 }
 
 function draw() {
+  if (isDrawing) return;
   const pool = state.items.filter(item => !item.excluded[state.mode]);
   if (!pool.length) {
     showNotice("抽選対象がありません。リストから項目を戻すか、除外をすべて解除してください。", "error");
     return;
   }
   hideNotice();
-  state.results = Array.from({ length: resultCount() }, () => pool[Math.floor(Math.random() * pool.length)].id);
+  const finalResults = pickResults(pool);
+  if (state.settings.drawAnimation) {
+    animateDraw(pool, finalResults);
+    return;
+  }
+  applyDrawResults(finalResults);
+}
+
+function pickResults(pool) {
+  return Array.from({ length: resultCount() }, () => pool[Math.floor(Math.random() * pool.length)].id);
+}
+
+function applyDrawResults(results, shouldRender = true) {
+  state.results = results;
   if (state.mode === "unity") {
     const selected = findItem(state.results[0]);
     selected.excluded.unity = true;
@@ -299,7 +344,41 @@ function draw() {
     renderItems();
     renderPoolCount();
   }
-  renderResults();
+  if (shouldRender) renderResults();
+}
+
+function animateDraw(pool, finalResults) {
+  isDrawing = true;
+  els.drawButton.disabled = true;
+  els.drawButton.setAttribute("aria-busy", "true");
+  els.drawButton.classList.add("is-drawing");
+  els.drawButton.querySelector("strong").textContent = "ガチャ中…";
+  els.resultsGrid.classList.add("is-drawing");
+  let shuffleCount = 0;
+  const finish = () => {
+    window.clearInterval(drawShuffleTimerId);
+    drawShuffleTimerId = null;
+    els.resultsGrid.classList.remove("is-drawing");
+    els.drawButton.classList.remove("is-drawing");
+    els.drawButton.disabled = false;
+    els.drawButton.removeAttribute("aria-busy");
+    els.drawButton.querySelector("strong").textContent = "ガチャを回す";
+    isDrawing = false;
+  };
+  const shuffle = () => {
+    shuffleCount += 1;
+    if (shuffleCount === DRAW_SHUFFLE_COUNT) applyDrawResults(finalResults, false);
+    else state.results = pickResults(pool);
+    renderResults();
+    els.resultsGrid.classList.add("is-drawing");
+    if (shuffleCount >= DRAW_SHUFFLE_COUNT) {
+      finish();
+    }
+  };
+  shuffle();
+  if (shuffleCount < DRAW_SHUFFLE_COUNT) {
+    drawShuffleTimerId = window.setInterval(shuffle, DRAW_SHUFFLE_INTERVAL);
+  }
 }
 
 function excludeCurrentOpen() {
@@ -420,6 +499,7 @@ function renderAll() {
 
 function renderControls() {
   document.body.dataset.mode = state.mode;
+  els.drawAnimationToggle.checked = state.settings.drawAnimation;
   els.modeTabs.forEach(tab => {
     const active = tab.dataset.mode === state.mode;
     tab.classList.toggle("is-active", active);

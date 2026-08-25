@@ -82,6 +82,21 @@
         </div>
       </section>
 
+      <section class="sidebar-section sidebar-settings" aria-labelledby="settings-title">
+        <h2 id="settings-title" class="sidebar-heading">
+          <i class="ph ph-gear ui-icon" aria-hidden="true"></i>
+          設定
+        </h2>
+        <label class="setting-toggle" for="draw-animation-toggle">
+          <span class="setting-toggle__copy">
+            <strong>ガチャアニメーション</strong>
+            <small>抽選中の演出を表示</small>
+          </span>
+          <input id="draw-animation-toggle" type="checkbox" checked>
+          <span class="setting-toggle__switch" aria-hidden="true"></span>
+        </label>
+      </section>
+
       <section class="sidebar-section sidebar-tools" aria-label="データ管理">
         <div id="data-menu" class="data-menu" hidden>
           <p class="data-menu__title">データ管理</p>
@@ -131,7 +146,7 @@
 
       <section class="results-section" aria-labelledby="results-title">
         <div class="section-heading">
-          <h2 id="results-title">今回のブキ</h2>
+          <h2 id="results-title">ガチャ結果</h2>
           <div class="section-heading__actions">
             <button id="exclude-results-button" class="action-link" type="button" hidden disabled>表示中のブキを抽選から外す</button>
             <button id="draw-button" class="draw-button" type="button">
