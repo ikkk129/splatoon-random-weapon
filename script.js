@@ -13,7 +13,7 @@ const state = {
   playerCount: 4,
   results: [],
   playerNames: [],
-  settings: { drawAnimation: false }
+  settings: { drawAnimation: true }
 };
 
 const els = {};
