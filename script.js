@@ -15,6 +15,7 @@ const state = {
 const els = {};
 let noticeTimerId = null;
 let countAnimationTimerId = null;
+let sidebarIconRollTimerId = null;
 const collapsedCategories = new Set();
 
 document.addEventListener("DOMContentLoaded", init);
@@ -39,7 +40,7 @@ async function init() {
 }
 
 function cacheElements() {
-  ["sidebar-collapse-button", "import-input", "import-button", "export-button", "reset-exclusions-button", "reset-data-button", "data-menu-button", "data-menu", "count-control", "excluded-count",
+  ["sidebar-collapse-button", "sidebar-brand-icon-button", "import-input", "import-button", "export-button", "reset-exclusions-button", "reset-data-button", "data-menu-button", "data-menu", "count-control", "excluded-count",
     "count-down", "count-up", "count-output", "player-count", "draw-button", "active-count",
     "total-count", "notice", "exclude-results-button", "results-grid", "exclude-all-button", "clear-exclusions-button",
     "items-toggle-button", "category-list", "confirm-dialog", "exclude-all-dialog"].forEach(id => { els[toCamel(id)] = document.getElementById(id); });
@@ -48,6 +49,7 @@ function cacheElements() {
 
 function bindEvents() {
   els.sidebarCollapseButton.addEventListener("click", toggleSidebar);
+  els.sidebarBrandIconButton.addEventListener("click", rollSidebarIcon);
   els.modeTabs.forEach(tab => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
   els.playerCount.addEventListener("input", () => setPlayerCount(Number(els.playerCount.value)));
   els.countDown.addEventListener("click", () => setPlayerCount(state.playerCount - 1));
@@ -88,6 +90,15 @@ function bindEvents() {
     }
   });
   window.addEventListener("resize", scheduleFitResultNames);
+}
+
+function rollSidebarIcon() {
+  const icon = els.sidebarBrandIconButton.querySelector(".app-title__icon");
+  icon.classList.remove("is-rolling");
+  void icon.offsetWidth;
+  icon.classList.add("is-rolling");
+  window.clearTimeout(sidebarIconRollTimerId);
+  sidebarIconRollTimerId = window.setTimeout(() => icon.classList.remove("is-rolling"), 2700);
 }
 
 function applyResponsiveSidebarState() {

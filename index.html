@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Splatoonランダムブキルーレット">
-  <title>Splatoonブキルーレット</title>
+  <meta name="description" content="Splatoonランダムブキガチャ">
+  <title>Splatoonブキガチャ</title>
   <link rel="icon" type="image/png" href="_images/MainWeapons/splattershot.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,9 @@
     <aside id="app-sidebar" class="app-sidebar" aria-label="抽選操作と設定">
       <div class="sidebar-inner">
         <div class="sidebar-brand">
-        <img class="app-title__icon" src="_images/top-icon.png?v=2" alt="Splatoonブキルーレット">
+          <button id="sidebar-brand-icon-button" class="sidebar-brand-button" type="button" aria-label="カプセルを転がす">
+            <img class="app-title__icon" src="_images/Gold-Capsule.png?v=3" alt="" aria-hidden="true">
+          </button>
         </div>
 
       <section class="sidebar-section" aria-labelledby="mode-title">
@@ -117,7 +119,10 @@
       <header class="content-header">
         <div>
           <p class="content-kicker">Splatoon / RANDOM WEAPON</p>
-          <h1>ブキルーレット</h1>
+          <div class="content-title">
+            <h1>ブキガチャ</h1>
+            <img class="content-title__icon" src="_images/Shell-Out-Machine.png?v=3" alt="" aria-hidden="true">
+          </div>
           <p class="content-lead">プレイヤーごとにランダムでブキを決めます</p>
         </div>
       </header>
@@ -130,7 +135,7 @@
           <div class="section-heading__actions">
             <button id="exclude-results-button" class="action-link" type="button" hidden disabled>表示中のブキを抽選から外す</button>
             <button id="draw-button" class="draw-button" type="button">
-              <strong>抽選する</strong>
+              <strong>ガチャを回す</strong>
               <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><rect width="12" height="12" x="2" y="10" rx="2" ry="2"></rect><path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"></path><path d="M6 18h.01"></path><path d="M10 14h.01"></path><path d="M15 6h.01"></path><path d="M18 9h.01"></path></svg>
             </button>
           </div>
