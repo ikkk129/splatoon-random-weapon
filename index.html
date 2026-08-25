@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css">
-  <link rel="stylesheet" href="style.css?v=50">
+  <link rel="stylesheet" href="style.css?v=58">
 </head>
 <body>
   <div class="ink-glow ink-glow--pink" aria-hidden="true"></div>
@@ -35,15 +35,15 @@
         <div class="mode-tabs" role="tablist" aria-label="抽選モード">
           <button class="mode-tab is-active" type="button" role="tab" aria-selected="true" data-mode="private">
             <span class="mode-tab__copy"><strong>プライベートマッチ</strong><small>10人までみんなでランダム</small></span>
-            <i class="ph ph-check mode-tab__check" aria-hidden="true"></i>
+            <i class="ph ph-check-circle mode-tab__check" aria-hidden="true"></i>
           </button>
           <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="open">
             <span class="mode-tab__copy"><strong>オープンマッチ</strong><small>チーム全員でランダム</small></span>
-            <i class="ph ph-check mode-tab__check" aria-hidden="true"></i>
+            <i class="ph ph-check-circle mode-tab__check" aria-hidden="true"></i>
           </button>
           <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="unity">
             <span class="mode-tab__copy"><strong>ブキ統一</strong><small>チーム全員で同じブキ</small></span>
-            <i class="ph ph-check mode-tab__check" aria-hidden="true"></i>
+            <i class="ph ph-check-circle mode-tab__check" aria-hidden="true"></i>
           </button>
         </div>
       </section>
@@ -146,8 +146,8 @@
           </div>
           <div class="items-section__controls">
             <div class="list-actions">
-              <button id="exclude-all-button" class="action-link" type="button">このモードのブキをすべて除外</button>
-              <button id="clear-exclusions-button" class="action-link" type="button">このモードの除外をすべて解除</button>
+              <button id="exclude-all-button" class="action-link action-link--danger" type="button">このモードのブキをすべて除外</button>
+              <button id="clear-exclusions-button" class="action-link action-link--safe" type="button">このモードの除外をすべて解除</button>
             </div>
             <button id="items-toggle-button" class="items-toggle-button" type="button" aria-expanded="false" aria-controls="items-content" aria-label="全カテゴリを開く">
               <svg class="ui-icon items-toggle-button__arrow" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
@@ -174,7 +174,18 @@
     </form>
   </dialog>
 
+  <dialog id="exclude-all-dialog" aria-labelledby="exclude-all-dialog-title" aria-describedby="exclude-all-dialog-description">
+    <form method="dialog">
+      <h2 id="exclude-all-dialog-title">ブキをすべて除外しますか？</h2>
+      <p id="exclude-all-dialog-description">このモードのブキがすべて抽選対象から外れます。あとで解除できます。</p>
+      <div class="dialog-actions">
+        <button value="cancel" class="utility-button">キャンセル</button>
+        <button value="confirm" class="dialog-confirm">すべて除外する</button>
+      </div>
+    </form>
+  </dialog>
+
   <script src="weapon-icons.js?v=3" defer></script>
-  <script src="script.js?v=18" defer></script>
+  <script src="script.js?v=20" defer></script>
 </body>
 </html>

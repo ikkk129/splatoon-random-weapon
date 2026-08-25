@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", init);
 async function init() {
   cacheElements();
   bindEvents();
+  applyResponsiveSidebarState();
   resetTransientState();
   try {
     const initial = await loadInitialData();
@@ -41,7 +42,7 @@ function cacheElements() {
   ["sidebar-collapse-button", "import-input", "import-button", "export-button", "reset-exclusions-button", "reset-data-button", "data-menu-button", "data-menu", "count-control", "excluded-count",
     "count-down", "count-up", "count-output", "player-count", "draw-button", "active-count",
     "total-count", "notice", "exclude-results-button", "results-grid", "exclude-all-button", "clear-exclusions-button",
-    "items-toggle-button", "category-list", "confirm-dialog"].forEach(id => { els[toCamel(id)] = document.getElementById(id); });
+    "items-toggle-button", "category-list", "confirm-dialog", "exclude-all-dialog"].forEach(id => { els[toCamel(id)] = document.getElementById(id); });
   els.modeTabs = [...document.querySelectorAll(".mode-tab")];
 }
 
@@ -53,7 +54,9 @@ function bindEvents() {
   els.countUp.addEventListener("click", () => setPlayerCount(state.playerCount + 1));
   els.drawButton.addEventListener("click", draw);
   els.excludeResultsButton.addEventListener("click", excludeCurrentOpen);
-  els.excludeAllButton.addEventListener("click", excludeAllItems);
+  els.excludeAllButton.addEventListener("click", () => {
+    els.excludeAllDialog.showModal();
+  });
   els.clearExclusionsButton.addEventListener("click", clearCurrentExclusions);
   els.itemsToggleButton.addEventListener("click", toggleItemsSection);
   els.dataMenuButton.addEventListener("click", toggleDataMenu);
@@ -71,6 +74,10 @@ function bindEvents() {
   els.confirmDialog.addEventListener("close", async () => {
     if (els.confirmDialog.returnValue === "confirm") await restoreDefaults();
   });
+  els.excludeAllDialog.addEventListener("close", () => {
+    if (els.excludeAllDialog.returnValue === "confirm") excludeAllItems();
+    els.excludeAllButton.focus();
+  });
   document.addEventListener("click", event => {
     if (!els.dataMenu.hidden && !els.dataMenu.contains(event.target) && !els.dataMenuButton.contains(event.target)) closeDataMenu();
   });
@@ -81,6 +88,21 @@ function bindEvents() {
     }
   });
   window.addEventListener("resize", scheduleFitResultNames);
+}
+
+function applyResponsiveSidebarState() {
+  const mobileQuery = window.matchMedia?.("(max-width: 900px)");
+  if (!mobileQuery) return;
+  const collapseOnMobile = () => {
+    if (!mobileQuery.matches) return;
+    const appShell = document.querySelector(".app-shell");
+    appShell.classList.add("is-sidebar-collapsed");
+    els.sidebarCollapseButton.classList.add("is-collapsed");
+    els.sidebarCollapseButton.setAttribute("aria-expanded", "false");
+    els.sidebarCollapseButton.setAttribute("aria-label", "サイドバーを開く");
+  };
+  collapseOnMobile();
+  mobileQuery.addEventListener?.("change", collapseOnMobile);
 }
 
 function toggleSidebar() {
