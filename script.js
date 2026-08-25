@@ -228,11 +228,11 @@ async function loadInitialData() {
 function loadSettings() {
   try {
     const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
-    if (!stored) return { drawAnimation: false };
+    if (!stored) return { drawAnimation: true };
     const parsed = JSON.parse(stored);
     return { drawAnimation: parsed?.drawAnimation !== false };
   } catch {
-    return { drawAnimation: false };
+    return { drawAnimation: true };
   }
 }
 
