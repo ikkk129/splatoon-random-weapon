@@ -9,7 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap">
-  <link rel="stylesheet" href="style.css?v=41">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css">
+  <link rel="stylesheet" href="style.css?v=50">
 </head>
 <body>
   <div class="ink-glow ink-glow--pink" aria-hidden="true"></div>
@@ -34,12 +35,15 @@
         <div class="mode-tabs" role="tablist" aria-label="抽選モード">
           <button class="mode-tab is-active" type="button" role="tab" aria-selected="true" data-mode="private">
             <span class="mode-tab__copy"><strong>プライベートマッチ</strong><small>10人までみんなでランダム</small></span>
+            <i class="ph ph-check mode-tab__check" aria-hidden="true"></i>
           </button>
           <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="open">
             <span class="mode-tab__copy"><strong>オープンマッチ</strong><small>チーム全員でランダム</small></span>
+            <i class="ph ph-check mode-tab__check" aria-hidden="true"></i>
           </button>
           <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="unity">
             <span class="mode-tab__copy"><strong>ブキ統一</strong><small>チーム全員で同じブキ</small></span>
+            <i class="ph ph-check mode-tab__check" aria-hidden="true"></i>
           </button>
         </div>
       </section>
@@ -50,12 +54,12 @@
           プレイヤー数
         </h2>
         <div class="count-stepper" data-direction="idle">
-          <button id="count-down" type="button" aria-label="人数を1人減らす">−</button>
+          <button id="count-down" type="button" aria-label="人数を1人減らす"><i class="ph ph-minus" aria-hidden="true"></i></button>
           <div class="count-value">
             <output id="count-output" for="player-count" aria-live="polite" aria-atomic="true">4</output>
           </div>
           <input id="player-count" type="range" min="2" max="10" value="4" aria-label="抽選する人数">
-          <button id="count-up" type="button" aria-label="人数を1人増やす">＋</button>
+          <button id="count-up" type="button" aria-label="人数を1人増やす"><i class="ph ph-plus" aria-hidden="true"></i></button>
         </div>
       </section>
 
