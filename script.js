@@ -6,6 +6,7 @@ const DEFAULT_DATA_URL = "weapon-list.json";
 const DRAW_SHUFFLE_COUNT = 7;
 const DRAW_SHUFFLE_INTERVAL = 100;
 const MODES = ["private", "open", "unity"];
+const LEGACY_EXCLUDED_KEYS = ["multi", "four", "single"];
 
 const state = {
   items: [],
@@ -61,7 +62,10 @@ function bindEvents() {
     state.settings.drawAnimation = els.drawAnimationToggle.checked;
     saveSettings();
   });
-  els.modeTabs.forEach(tab => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
+  els.modeTabs.forEach(tab => {
+    tab.addEventListener("click", () => setMode(tab.dataset.mode));
+    tab.addEventListener("keydown", handleModeKeydown);
+  });
   els.playerCount.addEventListener("input", () => setPlayerCount(Number(els.playerCount.value)));
   els.countDown.addEventListener("click", () => setPlayerCount(state.playerCount - 1));
   els.countUp.addEventListener("click", () => setPlayerCount(state.playerCount + 1));
@@ -84,8 +88,9 @@ function bindEvents() {
     closeDataMenu();
     els.confirmDialog.showModal();
   });
-  els.confirmDialog.addEventListener("close", async () => {
-    if (els.confirmDialog.returnValue === "confirm") await restoreDefaults();
+  els.confirmDialog.addEventListener("close", () => {
+    els.dataMenuButton.focus();
+    if (els.confirmDialog.returnValue === "confirm") restoreDefaults();
   });
   els.excludeAllDialog.addEventListener("close", () => {
     if (els.excludeAllDialog.returnValue === "confirm") excludeAllItems();
@@ -136,6 +141,26 @@ function toggleSidebar() {
   els.sidebarCollapseButton.setAttribute("aria-expanded", String(!willCollapse));
   els.sidebarCollapseButton.setAttribute("aria-label", willCollapse ? "サイドバーを開く" : "サイドバーを閉じる");
   els.sidebarCollapseButton.querySelector(".ui-icon").setAttribute("aria-hidden", "true");
+  scheduleFitResultNames();
+}
+
+function handleModeKeydown(event) {
+  if (isDrawing) return;
+  const keys = ["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"];
+  if (!keys.includes(event.key)) return;
+
+  event.preventDefault();
+  const currentIndex = els.modeTabs.indexOf(event.currentTarget);
+  let nextIndex;
+  if (event.key === "Home") nextIndex = 0;
+  else if (event.key === "End") nextIndex = els.modeTabs.length - 1;
+  else {
+    const direction = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : -1;
+    nextIndex = (currentIndex + direction + els.modeTabs.length) % els.modeTabs.length;
+  }
+  const nextTab = els.modeTabs[nextIndex];
+  setMode(nextTab.dataset.mode);
+  nextTab.focus();
 }
 
 function toggleDataMenu() {
@@ -179,6 +204,11 @@ function updateCategoryToggleSummary() {
   const allCollapsed = groups.length > 0 && groups.every(group => group.classList.contains("is-collapsed"));
   els.itemsToggleButton.setAttribute("aria-expanded", String(!allCollapsed));
   els.itemsToggleButton.setAttribute("aria-label", allCollapsed ? "全カテゴリを開く" : "全カテゴリを閉じる");
+  const controlledIds = groups
+    .map(group => group.querySelector(".category-group__content")?.id)
+    .filter(Boolean);
+  if (controlledIds.length) els.itemsToggleButton.setAttribute("aria-controls", controlledIds.join(" "));
+  else els.itemsToggleButton.removeAttribute("aria-controls");
 }
 
 function toggleItemsSection() {
@@ -246,9 +276,9 @@ function saveSettings() {
 
 function validateAndNormalize(raw) {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("JSONのルートはオブジェクトにしてください。");
+  if (raw.version !== 1) throw new Error("対応しているversionは1だけです。");
   const sourceItems = Array.isArray(raw.items) ? raw.items : null;
   if (!sourceItems || sourceItems.length === 0) throw new Error("items配列に1件以上の項目が必要です。");
-  if (raw.version !== 1) throw new Error("対応しているversionは1だけです。");
 
   const ids = new Set();
   const items = sourceItems.map((item, index) => {
@@ -274,6 +304,8 @@ function normalizeExcluded(rawExcluded, index) {
   if (MODES.some(mode => typeof rawExcluded[mode] !== "boolean")) {
     throw new Error(`${index + 1}件目のexcludedにはprivate・open・unityの真偽値が必要です。`);
   }
+  const legacyKey = LEGACY_EXCLUDED_KEYS.find(key => Object.hasOwn(rawExcluded, key));
+  if (legacyKey) throw new Error(`${index + 1}件目のexcludedに旧キー「${legacyKey}」は使用できません。`);
   return Object.fromEntries(MODES.map(mode => [mode, rawExcluded[mode]]));
 }
 
@@ -339,12 +371,17 @@ function applyDrawResults(results, shouldRender = true) {
   state.results = results;
   if (state.mode === "unity") {
     const selected = findItem(state.results[0]);
+    if (!selected) {
+      if (shouldRender) renderResults();
+      return false;
+    }
     selected.excluded.unity = true;
     saveState();
     renderItems();
     renderPoolCount();
   }
   if (shouldRender) renderResults();
+  return true;
 }
 
 function animateDraw(pool, finalResults) {
@@ -355,16 +392,6 @@ function animateDraw(pool, finalResults) {
   els.drawButton.querySelector("strong").textContent = "ガチャ中…";
   els.resultsGrid.classList.add("is-drawing");
   let shuffleCount = 0;
-  const finish = () => {
-    window.clearInterval(drawShuffleTimerId);
-    drawShuffleTimerId = null;
-    els.resultsGrid.classList.remove("is-drawing");
-    els.drawButton.classList.remove("is-drawing");
-    els.drawButton.disabled = false;
-    els.drawButton.removeAttribute("aria-busy");
-    els.drawButton.querySelector("strong").textContent = "ガチャを回す";
-    isDrawing = false;
-  };
   const shuffle = () => {
     shuffleCount += 1;
     if (shuffleCount === DRAW_SHUFFLE_COUNT) applyDrawResults(finalResults, false);
@@ -372,13 +399,24 @@ function animateDraw(pool, finalResults) {
     renderResults();
     els.resultsGrid.classList.add("is-drawing");
     if (shuffleCount >= DRAW_SHUFFLE_COUNT) {
-      finish();
+      finishDrawAnimation();
     }
   };
   shuffle();
   if (shuffleCount < DRAW_SHUFFLE_COUNT) {
     drawShuffleTimerId = window.setInterval(shuffle, DRAW_SHUFFLE_INTERVAL);
   }
+}
+
+function finishDrawAnimation() {
+  if (drawShuffleTimerId !== null) window.clearInterval(drawShuffleTimerId);
+  drawShuffleTimerId = null;
+  els.resultsGrid.classList.remove("is-drawing");
+  els.drawButton.classList.remove("is-drawing");
+  els.drawButton.disabled = false;
+  els.drawButton.removeAttribute("aria-busy");
+  els.drawButton.querySelector("strong").textContent = "ガチャを回す";
+  isDrawing = false;
 }
 
 function excludeCurrentOpen() {
@@ -444,7 +482,14 @@ async function importJson(event) {
   closeDataMenu();
   try {
     if (file.size > 5 * 1024 * 1024) throw new Error("ファイルサイズは5MB以下にしてください。");
-    const validated = validateAndNormalize(JSON.parse(await file.text()));
+    let parsed;
+    try {
+      parsed = JSON.parse(await file.text());
+    } catch {
+      throw new Error("JSONの構文が正しくありません。");
+    }
+    const validated = validateAndNormalize(parsed);
+    finishDrawAnimation();
     state.items = validated.items;
     collapseAllCategories();
     resetTransientState();
@@ -461,15 +506,27 @@ function exportJson() {
   const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = `ink-draw-${new Date().toISOString().slice(0, 10)}.json`;
+  anchor.download = `ink-draw-${formatLocalDate(new Date())}.json`;
+  anchor.hidden = true;
+  document.body.append(anchor);
   anchor.click();
-  URL.revokeObjectURL(url);
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   showNotice("現在のブキリストを書き出しました。", "success");
+}
+
+function formatLocalDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 async function restoreDefaults() {
   try {
-    state.items = (await loadDefaultData()).items;
+    const defaults = await loadDefaultData();
+    finishDrawAnimation();
+    state.items = defaults.items;
     state.mode = "private";
     state.playerCount = 4;
     collapseAllCategories();
@@ -503,7 +560,8 @@ function renderControls() {
   els.modeTabs.forEach(tab => {
     const active = tab.dataset.mode === state.mode;
     tab.classList.toggle("is-active", active);
-    tab.setAttribute("aria-selected", String(active));
+    tab.setAttribute("aria-checked", String(active));
+    tab.tabIndex = active ? 0 : -1;
   });
   els.countControl.hidden = state.mode === "unity";
   const minimum = 2;
@@ -564,13 +622,14 @@ function renderResults() {
     const icon = document.createElement("div");
     icon.className = "result-card__icon";
     if (selectedItem) {
-      const image = document.createElement("img");
-      const iconFile = window.WEAPON_ICONS?.[selectedItem.name];
-      image.src = iconFile ? `_images/MainWeapons/${encodeURIComponent(iconFile)}` : "";
-      image.alt = `${selectedItem.name}のアイコン`;
-      if (!iconFile) image.hidden = true;
-      image.addEventListener("error", () => { image.hidden = true; });
-      icon.append(image);
+      const iconFile = getWeaponIconFile(selectedItem.name);
+      if (iconFile) {
+        const image = document.createElement("img");
+        image.src = `_images/MainWeapons/${encodeURIComponent(iconFile)}`;
+        image.alt = `${selectedItem.name}のアイコン`;
+        image.addEventListener("error", () => { image.hidden = true; });
+        icon.append(image);
+      }
     }
     if (state.mode === "unity") {
       const selection = document.createElement("div");
@@ -597,13 +656,17 @@ function fitResultNames() {
     name.dataset.baseSize = String(baseSize);
 
     const minimumSize = Math.max(18, baseSize * 0.62);
-    // Keep an already-condensed size so a later font/layout measurement never grows the text.
-    let size = Number.parseFloat(name.style.fontSize) || baseSize;
+    let size = baseSize;
+    name.style.fontSize = `${baseSize}px`;
     while (name.scrollWidth > name.clientWidth + 1 && size > minimumSize) {
       size -= 1;
       name.style.fontSize = `${size}px`;
     }
     name.classList.toggle("is-condensed", size < baseSize);
+    const isTruncated = name.scrollWidth > name.clientWidth + 1;
+    name.classList.toggle("is-truncated", isTruncated);
+    if (isTruncated) name.title = name.textContent;
+    else name.removeAttribute("title");
   });
 }
 
@@ -617,6 +680,7 @@ function scheduleFitResultNames() {
 }
 
 function renderItems() {
+  const focusTarget = captureItemsFocus();
   els.categoryList.replaceChildren();
   const groups = new Map();
   state.items.forEach(item => {
@@ -648,6 +712,8 @@ function renderItems() {
     includeButton.textContent = "すべて含める";
     includeButton.disabled = items.every(item => !item.excluded[state.mode]);
     includeButton.setAttribute("aria-label", `${category}のブキをすべて抽選対象に含める`);
+    includeButton.dataset.focusKey = `category-include:${category}`;
+    includeButton.dataset.focusFallback = `category-toggle:${category}`;
     includeButton.addEventListener("click", () => includeCategory(category));
     const excludeButton = document.createElement("button");
     excludeButton.type = "button";
@@ -655,6 +721,8 @@ function renderItems() {
     excludeButton.textContent = "すべて除外";
     excludeButton.disabled = items.every(item => item.excluded[state.mode]);
     excludeButton.setAttribute("aria-label", `${category}のブキをすべて除外`);
+    excludeButton.dataset.focusKey = `category-exclude:${category}`;
+    excludeButton.dataset.focusFallback = `category-toggle:${category}`;
     excludeButton.addEventListener("click", () => excludeCategory(category));
     actions.append(includeButton, excludeButton);
     const contentId = `category-content-${categoryIndex++}`;
@@ -664,6 +732,7 @@ function renderItems() {
     toggleButton.setAttribute("aria-expanded", String(!isCollapsed));
     toggleButton.setAttribute("aria-controls", contentId);
     toggleButton.setAttribute("aria-label", `${categoryLabel}を${isCollapsed ? "開く" : "閉じる"}`);
+    toggleButton.dataset.focusKey = `category-toggle:${category}`;
     toggleButton.innerHTML = '<svg class="ui-icon category-toggle-button__arrow" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
     controls.append(actions, toggleButton);
     header.append(heading, controls);
@@ -673,9 +742,10 @@ function renderItems() {
       const button = document.createElement("button");
       button.type = "button";
       button.className = `item-chip${item.excluded[state.mode] ? " is-excluded" : ""}`;
+      button.dataset.focusKey = `item:${item.id}`;
       const icon = document.createElement("span");
       icon.className = "item-chip__icon";
-      const iconFile = window.WEAPON_ICONS?.[item.name];
+      const iconFile = getWeaponIconFile(item.name);
       if (iconFile) {
         const image = document.createElement("img");
         const iconUrl = `_images/MainWeapons/${encodeURIComponent(iconFile)}`;
@@ -714,6 +784,26 @@ function renderItems() {
     els.categoryList.append(section);
   });
   updateCategoryToggleSummary();
+  restoreItemsFocus(focusTarget);
+}
+
+function captureItemsFocus() {
+  const activeElement = document.activeElement;
+  if (!activeElement || !els.categoryList.contains(activeElement)) return null;
+  return {
+    key: activeElement.dataset.focusKey || "",
+    fallback: activeElement.dataset.focusFallback || ""
+  };
+}
+
+function restoreItemsFocus(focusTarget) {
+  if (!focusTarget?.key) return;
+  const controls = [...els.categoryList.querySelectorAll("[data-focus-key]")];
+  let target = controls.find(control => control.dataset.focusKey === focusTarget.key);
+  if (!target || target.disabled) {
+    target = controls.find(control => control.dataset.focusKey === focusTarget.fallback && !control.disabled);
+  }
+  target?.focus();
 }
 
 function renderPoolCount() {
@@ -724,6 +814,11 @@ function renderPoolCount() {
 }
 
 function findItem(id) { return state.items.find(item => item.id === id); }
+function getWeaponIconFile(name) {
+  const icons = window.WEAPON_ICONS;
+  if (!icons || !Object.hasOwn(icons, name) || typeof icons[name] !== "string") return "";
+  return icons[name];
+}
 function toCamel(value) { return value.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()); }
 function hideNotice() {
   if (noticeTimerId !== null) {

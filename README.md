@@ -63,7 +63,9 @@ Splatoon 3のブキをランダムに選ぶ、PC・スマートフォン向け�
 ├── script.js
 ├── weapon-list.json
 ├── weapon-icons.js
+├── README.md
 ├── 要件定義.md
+├── .gitignore
 ├── .nojekyll
 └── _images/
     ├── MainWeapons/
@@ -152,4 +154,4 @@ GitHub Pagesではリポジトリのルートを配信します。`_images`をJe
 
 本アプリは非公式のファンツールです。Splatoonおよび関連する名称・画像などの権利は、それぞれの権利者に帰属します。画像やデータを追加・再配布する場合は、利用条件と権利関係を確認してください。
 
-画面内の設定アイコンなどの汎用UIアイコンには[Phosphor Icons](https://phosphoricons.com/)を使用しています。
+画面内の汎用UIアイコンはインラインSVGとして同梱しており、外部CDNへの接続は行いません。

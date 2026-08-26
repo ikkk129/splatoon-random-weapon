@@ -4,13 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Splatoonランダムブキガチャ">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; form-action 'self'">
   <title>Splatoonブキガチャ</title>
   <link rel="icon" type="image/png" href="_images/MainWeapons/splattershot.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css">
-  <link rel="stylesheet" href="style.css?v=58">
+  <link rel="stylesheet" href="style.css?v=62">
 </head>
 <body>
   <div class="ink-glow ink-glow--pink" aria-hidden="true"></div>
@@ -34,18 +31,18 @@
           <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"></path><path d="m3 7 2 2 4-4"></path><path d="M13 6h8"></path><path d="M13 12h8"></path><path d="M13 18h8"></path></svg>
           モード
         </h2>
-        <div class="mode-tabs" role="tablist" aria-label="抽選モード">
-          <button class="mode-tab is-active" type="button" role="tab" aria-selected="true" data-mode="private">
+        <div class="mode-tabs" role="radiogroup" aria-label="抽選モード">
+          <button class="mode-tab is-active" type="button" role="radio" aria-checked="true" data-mode="private">
             <span class="mode-tab__copy"><strong>プライベートマッチ</strong><small>10人までみんなでランダム</small></span>
-            <i class="ph ph-check-circle mode-tab__check" aria-hidden="true"></i>
+            <svg class="ui-icon mode-tab__check" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 2.5 2.5L16 9"></path></svg>
           </button>
-          <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="open">
+          <button class="mode-tab" type="button" role="radio" aria-checked="false" data-mode="open" tabindex="-1">
             <span class="mode-tab__copy"><strong>オープンマッチ</strong><small>チーム全員でランダム</small></span>
-            <i class="ph ph-check-circle mode-tab__check" aria-hidden="true"></i>
+            <svg class="ui-icon mode-tab__check" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 2.5 2.5L16 9"></path></svg>
           </button>
-          <button class="mode-tab" type="button" role="tab" aria-selected="false" data-mode="unity">
+          <button class="mode-tab" type="button" role="radio" aria-checked="false" data-mode="unity" tabindex="-1">
             <span class="mode-tab__copy"><strong>ブキ統一</strong><small>チーム全員で同じブキ</small></span>
-            <i class="ph ph-check-circle mode-tab__check" aria-hidden="true"></i>
+            <svg class="ui-icon mode-tab__check" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 2.5 2.5L16 9"></path></svg>
           </button>
         </div>
       </section>
@@ -56,12 +53,12 @@
           プレイヤー数
         </h2>
         <div class="count-stepper" data-direction="idle">
-          <button id="count-down" type="button" aria-label="人数を1人減らす"><i class="ph ph-minus" aria-hidden="true"></i></button>
+          <button id="count-down" type="button" aria-label="人数を1人減らす"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14"></path></svg></button>
           <div class="count-value">
             <output id="count-output" for="player-count" aria-live="polite" aria-atomic="true">4</output>
           </div>
           <input id="player-count" type="range" min="2" max="10" value="4" aria-label="抽選する人数">
-          <button id="count-up" type="button" aria-label="人数を1人増やす"><i class="ph ph-plus" aria-hidden="true"></i></button>
+          <button id="count-up" type="button" aria-label="人数を1人増やす"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button>
         </div>
       </section>
 
@@ -84,7 +81,7 @@
 
       <section class="sidebar-section sidebar-settings" aria-labelledby="settings-title">
         <h2 id="settings-title" class="sidebar-heading">
-          <i class="ph ph-gear ui-icon" aria-hidden="true"></i>
+          <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.13.37.35.7.64.96.3.26.68.4 1.08.4H21v4h-.09A1.7 1.7 0 0 0 19.4 15Z"></path></svg>
           設定
         </h2>
         <label class="setting-toggle" for="draw-animation-toggle">
@@ -169,13 +166,13 @@
               <button id="exclude-all-button" class="action-link action-link--danger" type="button">このモードのブキをすべて除外</button>
               <button id="clear-exclusions-button" class="action-link action-link--safe" type="button">このモードの除外をすべて解除</button>
             </div>
-            <button id="items-toggle-button" class="items-toggle-button" type="button" aria-expanded="false" aria-controls="items-content" aria-label="全カテゴリを開く">
+            <button id="items-toggle-button" class="items-toggle-button" type="button" aria-expanded="false" aria-label="全カテゴリを開く">
               <svg class="ui-icon items-toggle-button__arrow" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
             </button>
           </div>
         </div>
         <div id="items-content" class="items-section__content" aria-hidden="false">
-          <div id="category-list" class="category-list" aria-live="polite"></div>
+          <div id="category-list" class="category-list"></div>
         </div>
       </section>
 
@@ -183,10 +180,10 @@
     </main>
   </div>
 
-  <dialog id="confirm-dialog">
+  <dialog id="confirm-dialog" aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-description">
     <form method="dialog">
-      <h2>初期データに戻しますか？</h2>
-      <p>現在の項目と、すべてのモードの除外状態が消去されます。</p>
+      <h2 id="confirm-dialog-title">初期データに戻しますか？</h2>
+      <p id="confirm-dialog-description">現在の項目と、すべてのモードの除外状態が消去されます。</p>
       <div class="dialog-actions">
         <button value="cancel" class="utility-button">キャンセル</button>
         <button value="confirm" class="dialog-confirm">初期データに戻す</button>
@@ -206,6 +203,6 @@
   </dialog>
 
   <script src="weapon-icons.js?v=3" defer></script>
-  <script src="script.js?v=20" defer></script>
+  <script src="script.js?v=21" defer></script>
 </body>
 </html>

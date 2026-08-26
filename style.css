@@ -79,7 +79,6 @@ body::before {
 
 .ui-icon { width: 20px; height: 20px; flex: 0 0 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .sidebar-heading .ui-icon, .sidebar-menu-button__label .ui-icon, .data-menu__item .ui-icon { color: #8a99a8; }
-.sidebar-heading .ph.ui-icon { display: inline-grid; place-items: center; font-size: 20px; }
 
 #mode-title, #count-title, #status-title { font-size: 17px; }
 
@@ -126,7 +125,7 @@ body::before {
 .count-stepper[data-direction="down"]::before { background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .42), transparent); animation: count-glow .36s ease-out; }
 .count-stepper:focus-within { background: transparent; }
 .count-stepper button { position: relative; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: #d6d6d6; color: #4a4a4a; font-size: 22px; line-height: 1; cursor: pointer; transition: background .2s ease, color .2s ease, transform .2s cubic-bezier(.22, 1, .36, 1); }
-.count-stepper button .ph { color: #111111; font-size: 22px; line-height: 1; }
+.count-stepper button .ui-icon { width: 22px; height: 22px; color: #111111; }
 .count-stepper button:hover:not(:disabled) { background: #c9c9c9; color: #333333; transform: translateY(-1px); }
 .count-stepper button:active:not(:disabled) { background: #d6d6d6; transform: translateY(1px) scale(.96); }
 .count-stepper button:disabled { background: #e8e8e8; color: #aaaaaa; cursor: not-allowed; opacity: 1; }
@@ -255,8 +254,8 @@ main > .results-section, main > .items-section { width: min(1050px, 100%); margi
 .content-title { display: flex; align-items: center; gap: 4px; }
 .content-title__icon { display: block; width: 56px; height: 56px; flex: 0 0 56px; object-fit: contain; transform: translateY(3px); }
 h1, h2 { margin: 0; }
-h1 { color: var(--paper); font-size: clamp(34px, 4vw, 48px); font-weight: 900; line-height: 1.1; letter-spacing: -.04em; }
-.content-lead { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+h1 { color: var(--paper); font-size: clamp(28px, calc(4vw - 6px), 40px); font-weight: 900; line-height: 1.1; letter-spacing: -.04em; }
+.content-lead { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
 .draw-callout { position: absolute; z-index: 2; top: -3px; right: 72px; display: block; width: 220px; height: auto; pointer-events: none; user-select: none; }
 
 .notice { position: fixed; z-index: 30; right: 32px; bottom: 24px; width: min(520px, calc(100vw - 64px)); margin: 0; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 13px 16px; background: var(--toast-bg); box-shadow: 0 12px 30px rgba(88, 126, 154, .18); font-size: 13px; }
@@ -324,7 +323,7 @@ h1 { color: var(--paper); font-size: clamp(34px, 4vw, 48px); font-weight: 900; l
 .result-card {
   position: relative;
   width: 100%;
-  min-height: 154px;
+  min-height: 149px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 142px;
   align-items: stretch;
@@ -341,6 +340,7 @@ h1 { color: var(--paper); font-size: clamp(34px, 4vw, 48px); font-weight: 900; l
 .player-name:focus, .player-name:focus-visible { border-bottom-color: var(--line); outline: none; }
 .result-name { min-width: 0; min-height: 36px; margin: 0; overflow: hidden; color: var(--paper); font-size: 25px; font-weight: 800; line-height: 1.25; white-space: nowrap; transform: translateY(-1px); }
 .result-name.is-condensed { letter-spacing: 0; }
+.result-name.is-truncated { text-overflow: ellipsis; }
 .result-card__icon { display: grid; place-items: center; margin: 12px 12px 12px 0; }
 .result-card__icon img { display: block; width: 120px; height: 106px; object-fit: contain; }
 body[data-mode="unity"] .results-grid { grid-template-columns: minmax(420px, 720px); justify-content: center; }
@@ -487,8 +487,8 @@ dialog form > p { color: var(--muted); font-size: 15px; line-height: 1.7; }
   .content-header { padding-right: 48px; }
   .content-title { gap: 4px; }
   .content-title__icon { width: 44px; height: 44px; flex-basis: 44px; }
-  h1 { font-size: 36px; }
-  .result-card { grid-template-columns: minmax(0, 1fr) 78px; min-height: 136px; }
+  h1 { font-size: 30px; }
+  .result-card { grid-template-columns: minmax(0, 1fr) 78px; min-height: 131px; }
   .result-card__content { padding: 16px 10px 16px 16px; }
   .result-card__icon { margin-right: 8px; }
   .result-card__icon img { width: 70px; height: 68px; }
