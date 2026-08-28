@@ -2,7 +2,7 @@
 
 Splatoon のブキをランダムに選ぶツールです。ブラウザだけで動作し、専用サーバーやアカウントは必要ありません。
 
-公開サイト: [https://fortisik129.github.io/splatoon-random-weapon/](https://ikkk129.github.io/splatoon-random-weapon/)
+公開サイト: [https://fortisik129.github.io/splatoon-random-weapon/](https://fortisik129.github.io/splatoon-random-weapon/)
 
 ## 使い方
 
