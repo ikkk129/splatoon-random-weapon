@@ -6,6 +6,8 @@ const DEFAULT_DATA_URL = "weapon-list.json";
 const DRAW_SHUFFLE_COUNT = 7;
 const DRAW_SHUFFLE_INTERVAL = 100;
 const MIN_PLAYERS = 2;
+const ICON_PRELOAD_CONCURRENCY = 6;
+const ICON_PRELOAD_TIMEOUT = 1000;
 // Single source of truth for per-mode behaviour: adding a mode only needs a new entry here.
 const MODE_CONFIG = {
   private: { label: "プライベートマッチ", maxPlayers: 10 },
@@ -52,6 +54,28 @@ async function init() {
     showNotice(`データを読み込めませんでした。${error.message}`, "error");
     renderAll();
   }
+  preloadWeaponIcons();
+}
+
+// 初回訪問ではアイコンが未キャッシュのため、100ms間隔で切り替わるガチャ演出に読み込みが間に合わない。
+// メインスレッドの空き時間だけを使って全アイコンを先読みし、初期表示を妨げずに演出を滑らかにする。
+function preloadWeaponIcons() {
+  const icons = window.WEAPON_ICONS;
+  if (!icons) return;
+  const files = [...new Set(Object.values(icons).filter(file => typeof file === "string" && file))];
+  const schedule = typeof window.requestIdleCallback === "function"
+    ? callback => window.requestIdleCallback(callback, { timeout: ICON_PRELOAD_TIMEOUT })
+    : callback => window.setTimeout(callback, 200);
+  let cursor = 0;
+  const pump = () => {
+    if (cursor >= files.length) return;
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = image.onerror = () => schedule(pump);
+    image.src = getWeaponIconUrl(files[cursor]);
+    cursor += 1;
+  };
+  for (let i = 0; i < ICON_PRELOAD_CONCURRENCY; i += 1) schedule(pump);
 }
 
 function cacheElements() {
@@ -615,9 +639,10 @@ function renderResults() {
       const iconFile = getWeaponIconFile(selectedItem.name);
       if (iconFile) {
         const image = document.createElement("img");
-        image.src = `_images/MainWeapons/${encodeURIComponent(iconFile)}`;
+        image.src = getWeaponIconUrl(iconFile);
         image.alt = `${selectedItem.name}のアイコン`;
-        image.addEventListener("error", () => { image.hidden = true; });
+        image.decoding = "async";
+        attachWeaponIconFallback(image, iconFile);
         icon.append(image);
       }
     }
@@ -767,13 +792,13 @@ function createItemChip(item, isCollapsed) {
   const iconFile = getWeaponIconFile(item.name);
   if (iconFile) {
     const image = document.createElement("img");
-    const iconUrl = `_images/MainWeapons/${encodeURIComponent(iconFile)}`;
+    const iconUrl = getWeaponIconUrl(iconFile);
     if (isCollapsed) image.dataset.src = iconUrl;
     else image.src = iconUrl;
     image.alt = "";
     image.loading = "lazy";
     image.decoding = "async";
-    image.addEventListener("error", () => { image.hidden = true; });
+    attachWeaponIconFallback(image, iconFile);
     icon.append(image);
   }
   const name = document.createElement("span");
@@ -833,6 +858,20 @@ function getWeaponIconFile(name) {
   const icons = window.WEAPON_ICONS;
   if (!icons || !Object.hasOwn(icons, name) || typeof icons[name] !== "string") return "";
   return icons[name];
+}
+// 配信は軽量なWebPを優先し、デコードできない環境ではリポジトリに残した元PNGへ一度だけ切り替える。
+function getWeaponIconUrl(iconFile) {
+  return `_images/MainWeapons/${encodeURIComponent(iconFile.replace(/\.png$/i, ".webp"))}`;
+}
+function attachWeaponIconFallback(image, iconFile) {
+  image.addEventListener("error", () => {
+    if (image.dataset.iconFallback === "used") {
+      image.hidden = true;
+      return;
+    }
+    image.dataset.iconFallback = "used";
+    image.src = `_images/MainWeapons/${encodeURIComponent(iconFile)}`;
+  });
 }
 function toCamel(value) { return value.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()); }
 function hideNotice() {

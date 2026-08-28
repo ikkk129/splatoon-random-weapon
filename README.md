@@ -127,7 +127,13 @@ python -m http.server 4173
 
 ファイル名は英小文字・数字・ハイフンのケバブケースに統一しています。GitHub Pagesはファイル名の大文字・小文字を区別するため、`weapon-icons.js`と実ファイルを完全一致させてください。対応がない場合も抽選はできますが、画像は表示されません。
 
-ブキリストの画像はカテゴリを開いたときに遅延読み込みされます。初期表示で全画像を一括取得しない設計です。
+配信には同名の`.webp`を使い、デコードできない環境では元のPNGへ自動で切り替えます。`weapon-icons.js`には`.png`のまま記載し、ブキ画像を追加・更新したら次のコマンドでWebPを生成してください。元のPNGは残したままになります。
+
+```powershell
+magick mogrify -path _images/MainWeapons -format webp -quality 85 -define webp:method=6 -define webp:alpha-quality=100 _images/MainWeapons/*.png
+```
+
+ブキリストの画像はカテゴリを開いたときに遅延読み込みされます。加えて初期表示の完了後、`requestIdleCallback`でメインスレッドの空き時間に全アイコンを先読みするため、初回訪問でもガチャ演出中に画像が欠けません。
 
 ### ブラウザ保存
 
