@@ -5,7 +5,14 @@ const SETTINGS_STORAGE_KEY = "ink-draw-settings-v1";
 const DEFAULT_DATA_URL = "weapon-list.json";
 const DRAW_SHUFFLE_COUNT = 7;
 const DRAW_SHUFFLE_INTERVAL = 100;
-const MODES = ["private", "open", "unity"];
+const MIN_PLAYERS = 2;
+// Single source of truth for per-mode behaviour: adding a mode only needs a new entry here.
+const MODE_CONFIG = {
+  private: { label: "プライベートマッチ", maxPlayers: 10 },
+  open: { label: "オープンマッチ", maxPlayers: 4, canExcludeResults: true },
+  unity: { label: "ブキ統一", maxPlayers: 10, singleResult: true, autoExcludeResult: true }
+};
+const MODES = Object.keys(MODE_CONFIG);
 const LEGACY_EXCLUDED_KEYS = ["multi", "four", "single"];
 
 const state = {
@@ -312,12 +319,14 @@ function normalizeExcluded(rawExcluded, index) {
 function setMode(mode) {
   if (isDrawing || !MODES.includes(mode) || mode === state.mode) return;
   state.mode = mode;
-  const modeMinimum = 2;
-  const modeMaximum = mode === "open" ? 4 : 10;
-  state.playerCount = Math.max(modeMinimum, Math.min(modeMaximum, state.playerCount));
+  state.playerCount = clampPlayerCount(state.playerCount);
   resetTransientState();
   hideNotice();
   renderAll();
+}
+
+function clampPlayerCount(count) {
+  return Math.max(MIN_PLAYERS, Math.min(MODE_CONFIG[state.mode].maxPlayers, count));
 }
 
 function resetTransientState() {
@@ -328,9 +337,7 @@ function resetTransientState() {
 
 function setPlayerCount(count) {
   if (isDrawing) return;
-  const minimum = 2;
-  const maximum = state.mode === "open" ? 4 : 10;
-  const next = Math.max(minimum, Math.min(maximum, count));
+  const next = clampPlayerCount(count);
   if (next === state.playerCount) return;
   const previous = state.playerCount;
   const oldNames = state.playerNames;
@@ -344,7 +351,7 @@ function setPlayerCount(count) {
 }
 
 function resultCount() {
-  return state.mode === "unity" ? 1 : state.playerCount;
+  return MODE_CONFIG[state.mode].singleResult ? 1 : state.playerCount;
 }
 
 function draw() {
@@ -367,21 +374,14 @@ function pickResults(pool) {
   return Array.from({ length: resultCount() }, () => pool[Math.floor(Math.random() * pool.length)].id);
 }
 
-function applyDrawResults(results, shouldRender = true) {
+function applyDrawResults(results) {
   state.results = results;
-  if (state.mode === "unity") {
-    const selected = findItem(state.results[0]);
-    if (!selected) {
-      if (shouldRender) renderResults();
-      return false;
-    }
-    selected.excluded.unity = true;
-    saveState();
-    renderItems();
-    renderPoolCount();
+  const selected = MODE_CONFIG[state.mode].autoExcludeResult ? findItem(results[0]) : null;
+  if (selected) {
+    selected.excluded[state.mode] = true;
+    commitExclusions();
   }
-  if (shouldRender) renderResults();
-  return true;
+  renderResults();
 }
 
 function animateDraw(pool, finalResults) {
@@ -394,18 +394,16 @@ function animateDraw(pool, finalResults) {
   let shuffleCount = 0;
   const shuffle = () => {
     shuffleCount += 1;
-    if (shuffleCount === DRAW_SHUFFLE_COUNT) applyDrawResults(finalResults, false);
-    else state.results = pickResults(pool);
-    renderResults();
-    els.resultsGrid.classList.add("is-drawing");
     if (shuffleCount >= DRAW_SHUFFLE_COUNT) {
+      applyDrawResults(finalResults);
       finishDrawAnimation();
+      return;
     }
+    state.results = pickResults(pool);
+    renderResults();
   };
   shuffle();
-  if (shuffleCount < DRAW_SHUFFLE_COUNT) {
-    drawShuffleTimerId = window.setInterval(shuffle, DRAW_SHUFFLE_INTERVAL);
-  }
+  drawShuffleTimerId = window.setInterval(shuffle, DRAW_SHUFFLE_INTERVAL);
 }
 
 function finishDrawAnimation() {
@@ -419,60 +417,51 @@ function finishDrawAnimation() {
   isDrawing = false;
 }
 
-function excludeCurrentOpen() {
-  if (state.mode !== "open" || state.results.some(id => !id)) return;
-  new Set(state.results).forEach(id => { const item = findItem(id); if (item) item.excluded.open = true; });
+// Every exclusion change funnels through here so storage and UI never drift apart.
+function commitExclusions() {
   saveState();
-  renderItems();
+  refreshItems();
   renderPoolCount();
-  showNotice("表示中のブキをオープンマッチモードの抽選対象から除外しました。", "success", 3000);
+}
+
+function setExcluded(excluded, matches = () => true) {
+  if (isDrawing) return;
+  state.items.forEach(item => { if (matches(item)) item.excluded[state.mode] = excluded; });
+  commitExclusions();
+}
+
+function excludeCurrentOpen() {
+  if (isDrawing || !MODE_CONFIG[state.mode].canExcludeResults || state.results.some(id => !id)) return;
+  const drawnIds = new Set(state.results);
+  setExcluded(true, item => drawnIds.has(item.id));
+  showNotice(`表示中のブキを${MODE_CONFIG[state.mode].label}モードの抽選対象から除外しました。`, "success", 3000);
 }
 
 function clearCurrentExclusions() {
-  state.items.forEach(item => { item.excluded[state.mode] = false; });
-  saveState();
-  renderItems();
-  renderPoolCount();
+  setExcluded(false);
   hideNotice();
 }
 
-function resetAllExclusions() {
-  state.items.forEach(item => MODES.forEach(mode => { item.excluded[mode] = false; }));
-  saveState();
-  renderItems();
-  renderPoolCount();
-  closeDataMenu();
-  showNotice("すべてのモードの除外をリセットしました。", "success", 3000);
-}
-
 function excludeAllItems() {
-  state.items.forEach(item => { item.excluded[state.mode] = true; });
-  saveState();
-  renderItems();
-  renderPoolCount();
+  setExcluded(true);
 }
 
-function excludeCategory(category) {
-  state.items.filter(item => item.category === category).forEach(item => { item.excluded[state.mode] = true; });
-  saveState();
-  renderItems();
-  renderPoolCount();
-}
-
-function includeCategory(category) {
-  state.items.filter(item => item.category === category).forEach(item => { item.excluded[state.mode] = false; });
-  saveState();
-  renderItems();
-  renderPoolCount();
+function setCategoryExcluded(category, excluded) {
+  setExcluded(excluded, item => item.category === category);
 }
 
 function toggleItem(id) {
   const item = findItem(id);
   if (!item) return;
-  item.excluded[state.mode] = !item.excluded[state.mode];
-  saveState();
-  renderItems();
-  renderPoolCount();
+  setExcluded(!item.excluded[state.mode], candidate => candidate === item);
+}
+
+function resetAllExclusions() {
+  if (isDrawing) return;
+  state.items.forEach(item => MODES.forEach(mode => { item.excluded[mode] = false; }));
+  commitExclusions();
+  closeDataMenu();
+  showNotice("すべてのモードの除外をリセットしました。", "success", 3000);
 }
 
 async function importJson(event) {
@@ -563,17 +552,16 @@ function renderControls() {
     tab.setAttribute("aria-checked", String(active));
     tab.tabIndex = active ? 0 : -1;
   });
-  els.countControl.hidden = state.mode === "unity";
-  const minimum = 2;
-  const maximum = state.mode === "open" ? 4 : 10;
-  els.playerCount.min = String(minimum);
-  els.playerCount.max = String(maximum);
+  const config = MODE_CONFIG[state.mode];
+  els.countControl.hidden = Boolean(config.singleResult);
+  els.playerCount.min = String(MIN_PLAYERS);
+  els.playerCount.max = String(config.maxPlayers);
   els.playerCount.value = state.playerCount;
   els.countOutput.value = String(state.playerCount);
   els.countOutput.textContent = String(state.playerCount);
-  els.countDown.disabled = state.playerCount <= minimum;
-  els.countUp.disabled = state.playerCount >= maximum;
-  els.excludeResultsButton.hidden = state.mode !== "open";
+  els.countDown.disabled = state.playerCount <= MIN_PLAYERS;
+  els.countUp.disabled = state.playerCount >= config.maxPlayers;
+  els.excludeResultsButton.hidden = !config.canExcludeResults;
 }
 
 function animatePlayerCount(previous, next) {
@@ -598,16 +586,18 @@ function animatePlayerCount(previous, next) {
 
 function renderResults() {
   els.resultsGrid.replaceChildren();
+  const config = MODE_CONFIG[state.mode];
+  const isSingle = Boolean(config.singleResult);
   for (let index = 0; index < resultCount(); index++) {
     const card = document.createElement("article");
-    card.className = `result-card${state.mode === "unity" ? " result-card--unity" : ""}`;
+    card.className = `result-card${isSingle ? " result-card--unity" : ""}`;
     const content = document.createElement("div");
     content.className = "result-card__content";
     const result = document.createElement("p");
     result.className = "result-name";
     const selectedItem = findItem(state.results[index]);
     result.textContent = selectedItem?.name || "—";
-    if (state.mode !== "unity") {
+    if (!isSingle) {
       const input = document.createElement("input");
       input.className = "player-name";
       input.type = "text";
@@ -631,7 +621,7 @@ function renderResults() {
         icon.append(image);
       }
     }
-    if (state.mode === "unity") {
+    if (isSingle) {
       const selection = document.createElement("div");
       selection.className = "result-card__selection";
       selection.append(content, icon);
@@ -641,27 +631,27 @@ function renderResults() {
     }
     els.resultsGrid.append(card);
   }
-  els.excludeResultsButton.disabled = state.mode !== "open" || state.results.length !== state.playerCount || state.results.some(id => !id);
+  els.excludeResultsButton.disabled = !config.canExcludeResults || state.results.length !== resultCount() || state.results.some(id => !id);
   fitResultNames();
-  // Web fonts can finish loading just after the cards are painted; measure once more then.
-  window.setTimeout(fitResultNames, 350);
 }
 
 // Keep weapon names legible while preventing long names from escaping their result card.
-// The base size comes from CSS; only cards that need more room are condensed.
+// The base size comes from CSS; overflowing cards are scaled by the measured overflow ratio,
+// which costs two reflows per card instead of one per shrink step.
 function fitResultNames() {
   els.resultsGrid.querySelectorAll(".result-name").forEach(name => {
     const baseSize = Number.parseFloat(name.dataset.baseSize) || Number.parseFloat(getComputedStyle(name).fontSize);
     if (!baseSize || name.clientWidth <= 0) return;
     name.dataset.baseSize = String(baseSize);
 
-    const minimumSize = Math.max(18, baseSize * 0.62);
-    let size = baseSize;
     name.style.fontSize = `${baseSize}px`;
-    while (name.scrollWidth > name.clientWidth + 1 && size > minimumSize) {
-      size -= 1;
-      name.style.fontSize = `${size}px`;
-    }
+    const minimumSize = Math.max(18, baseSize * 0.62);
+    const overflow = name.scrollWidth > name.clientWidth + 1;
+    const size = overflow
+      ? Math.max(minimumSize, Math.floor(baseSize * (name.clientWidth / name.scrollWidth)))
+      : baseSize;
+    if (size !== baseSize) name.style.fontSize = `${size}px`;
+
     name.classList.toggle("is-condensed", size < baseSize);
     const isTruncated = name.scrollWidth > name.clientWidth + 1;
     name.classList.toggle("is-truncated", isTruncated);
@@ -679,52 +669,41 @@ function scheduleFitResultNames() {
   });
 }
 
-function renderItems() {
-  const focusTarget = captureItemsFocus();
-  els.categoryList.replaceChildren();
+function groupItemsByCategory() {
   const groups = new Map();
   state.items.forEach(item => {
     if (!groups.has(item.category)) groups.set(item.category, []);
     groups.get(item.category).push(item);
   });
+  return groups;
+}
+
+// Builds the category DOM. Only call this when the item set or category layout changes;
+// exclusion changes go through refreshItems() instead.
+function renderItems() {
+  els.categoryList.replaceChildren();
   let categoryIndex = 0;
-  groups.forEach((items, category) => {
+  groupItemsByCategory().forEach((items, category) => {
     const categoryLabel = category.replace(/系$/, "");
     const isCollapsed = collapsedCategories.has(category);
     const section = document.createElement("section");
     section.className = `category-group${isCollapsed ? " is-collapsed" : ""}`;
     section.dataset.category = category;
     section.dataset.categoryLabel = categoryLabel;
-    const header = document.createElement("div");
-    header.className = "category-group__header";
+
     const heading = document.createElement("h3");
     heading.textContent = categoryLabel;
     const count = document.createElement("span");
-    count.textContent = `${items.filter(item => !item.excluded[state.mode]).length} / ${items.length}`;
+    count.className = "category-group__count";
     heading.append(count);
-    const controls = document.createElement("div");
-    controls.className = "category-group__controls";
+
     const actions = document.createElement("div");
     actions.className = "category-group__actions";
-    const includeButton = document.createElement("button");
-    includeButton.type = "button";
-    includeButton.className = "category-action-button";
-    includeButton.textContent = "すべて含める";
-    includeButton.disabled = items.every(item => !item.excluded[state.mode]);
-    includeButton.setAttribute("aria-label", `${category}のブキをすべて抽選対象に含める`);
-    includeButton.dataset.focusKey = `category-include:${category}`;
-    includeButton.dataset.focusFallback = `category-toggle:${category}`;
-    includeButton.addEventListener("click", () => includeCategory(category));
-    const excludeButton = document.createElement("button");
-    excludeButton.type = "button";
-    excludeButton.className = "category-action-button";
-    excludeButton.textContent = "すべて除外";
-    excludeButton.disabled = items.every(item => item.excluded[state.mode]);
-    excludeButton.setAttribute("aria-label", `${category}のブキをすべて除外`);
-    excludeButton.dataset.focusKey = `category-exclude:${category}`;
-    excludeButton.dataset.focusFallback = `category-toggle:${category}`;
-    excludeButton.addEventListener("click", () => excludeCategory(category));
-    actions.append(includeButton, excludeButton);
+    actions.append(
+      createCategoryActionButton(category, false, "すべて含める", `${category}のブキをすべて抽選対象に含める`),
+      createCategoryActionButton(category, true, "すべて除外", `${category}のブキをすべて除外`)
+    );
+
     const contentId = `category-content-${categoryIndex++}`;
     const toggleButton = document.createElement("button");
     toggleButton.type = "button";
@@ -732,49 +711,29 @@ function renderItems() {
     toggleButton.setAttribute("aria-expanded", String(!isCollapsed));
     toggleButton.setAttribute("aria-controls", contentId);
     toggleButton.setAttribute("aria-label", `${categoryLabel}を${isCollapsed ? "開く" : "閉じる"}`);
-    toggleButton.dataset.focusKey = `category-toggle:${category}`;
-    toggleButton.innerHTML = '<svg class="ui-icon category-toggle-button__arrow" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
+    toggleButton.append(createChevronIcon("category-toggle-button__arrow"));
+
+    const controls = document.createElement("div");
+    controls.className = "category-group__controls";
     controls.append(actions, toggleButton);
+    const header = document.createElement("div");
+    header.className = "category-group__header";
     header.append(heading, controls);
+
     const chips = document.createElement("div");
     chips.className = "item-chips";
-    items.forEach(item => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = `item-chip${item.excluded[state.mode] ? " is-excluded" : ""}`;
-      button.dataset.focusKey = `item:${item.id}`;
-      const icon = document.createElement("span");
-      icon.className = "item-chip__icon";
-      const iconFile = getWeaponIconFile(item.name);
-      if (iconFile) {
-        const image = document.createElement("img");
-        const iconUrl = `_images/MainWeapons/${encodeURIComponent(iconFile)}`;
-        if (isCollapsed) image.dataset.src = iconUrl;
-        else image.src = iconUrl;
-        image.alt = "";
-        image.loading = "lazy";
-        image.decoding = "async";
-        image.addEventListener("error", () => { image.hidden = true; });
-        icon.append(image);
-      }
-      const name = document.createElement("span");
-      name.className = "item-chip__name";
-      name.textContent = item.name;
-      button.append(icon, name);
-      button.setAttribute("aria-pressed", String(item.excluded[state.mode]));
-      button.setAttribute("aria-label", `${item.name}を${item.excluded[state.mode] ? "抽選対象に戻す" : "除外する"}`);
-      button.addEventListener("click", () => toggleItem(item.id));
-      chips.append(button);
-    });
+    items.forEach(item => chips.append(createItemChip(item, isCollapsed)));
+
+    const contentInner = document.createElement("div");
+    contentInner.className = "category-group__content-inner";
+    contentInner.append(chips);
     const content = document.createElement("div");
     content.id = contentId;
     content.className = "category-group__content";
     content.setAttribute("aria-hidden", String(isCollapsed));
     content.inert = isCollapsed;
-    const contentInner = document.createElement("div");
-    contentInner.className = "category-group__content-inner";
-    contentInner.append(chips);
     content.append(contentInner);
+
     toggleButton.addEventListener("click", () => {
       const willOpen = section.classList.contains("is-collapsed");
       setCategoryGroupCollapsed(section, content, toggleButton, category, categoryLabel, !willOpen);
@@ -784,26 +743,82 @@ function renderItems() {
     els.categoryList.append(section);
   });
   updateCategoryToggleSummary();
-  restoreItemsFocus(focusTarget);
+  refreshItems();
 }
 
-function captureItemsFocus() {
-  const activeElement = document.activeElement;
-  if (!activeElement || !els.categoryList.contains(activeElement)) return null;
-  return {
-    key: activeElement.dataset.focusKey || "",
-    fallback: activeElement.dataset.focusFallback || ""
-  };
+function createCategoryActionButton(category, excluded, text, label) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "category-action-button";
+  button.dataset.action = excluded ? "exclude" : "include";
+  button.textContent = text;
+  button.setAttribute("aria-label", label);
+  button.addEventListener("click", () => setCategoryExcluded(category, excluded));
+  return button;
 }
 
-function restoreItemsFocus(focusTarget) {
-  if (!focusTarget?.key) return;
-  const controls = [...els.categoryList.querySelectorAll("[data-focus-key]")];
-  let target = controls.find(control => control.dataset.focusKey === focusTarget.key);
-  if (!target || target.disabled) {
-    target = controls.find(control => control.dataset.focusKey === focusTarget.fallback && !control.disabled);
+function createItemChip(item, isCollapsed) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "item-chip";
+  button.dataset.itemId = item.id;
+  const icon = document.createElement("span");
+  icon.className = "item-chip__icon";
+  const iconFile = getWeaponIconFile(item.name);
+  if (iconFile) {
+    const image = document.createElement("img");
+    const iconUrl = `_images/MainWeapons/${encodeURIComponent(iconFile)}`;
+    if (isCollapsed) image.dataset.src = iconUrl;
+    else image.src = iconUrl;
+    image.alt = "";
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.addEventListener("error", () => { image.hidden = true; });
+    icon.append(image);
   }
-  target?.focus();
+  const name = document.createElement("span");
+  name.className = "item-chip__name";
+  name.textContent = item.name;
+  button.append(icon, name);
+  button.addEventListener("click", () => toggleItem(item.id));
+  return button;
+}
+
+function createChevronIcon(modifierClass) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", `ui-icon ${modifierClass}`);
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", "m6 9 6 6 6-6");
+  svg.append(path);
+  return svg;
+}
+
+// Exclusion changes only touch state-dependent attributes, so the chip DOM is reused
+// and focus survives without a capture/restore dance.
+function refreshItems() {
+  const focused = document.activeElement;
+  const groups = groupItemsByCategory();
+  els.categoryList.querySelectorAll(".category-group").forEach(section => {
+    const items = groups.get(section.dataset.category) ?? [];
+    const activeCount = items.filter(item => !item.excluded[state.mode]).length;
+    section.querySelector(".category-group__count").textContent = `${activeCount} / ${items.length}`;
+    section.querySelector('[data-action="include"]').disabled = activeCount === items.length;
+    section.querySelector('[data-action="exclude"]').disabled = activeCount === 0;
+    const chips = new Map([...section.querySelectorAll(".item-chip")].map(chip => [chip.dataset.itemId, chip]));
+    items.forEach(item => applyItemChipState(chips.get(item.id), item));
+  });
+  // A category action button that just became disabled would otherwise drop focus to <body>.
+  if (focused?.disabled) focused.closest(".category-group")?.querySelector(".category-toggle-button")?.focus();
+}
+
+function applyItemChipState(chip, item) {
+  if (!chip) return;
+  const excluded = item.excluded[state.mode];
+  chip.classList.toggle("is-excluded", excluded);
+  chip.setAttribute("aria-pressed", String(excluded));
+  chip.setAttribute("aria-label", `${item.name}を${excluded ? "抽選対象に戻す" : "除外する"}`);
 }
 
 function renderPoolCount() {
