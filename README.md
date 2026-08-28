@@ -1,8 +1,8 @@
 # Splatoonブキガチャ
 
-Splatoon 3のブキをランダムに選ぶ、PC・スマートフォン向けの非公式ファンツールです。ブラウザだけで動作し、専用サーバーやアカウントは必要ありません。
+Splatoon のブキをランダムに選ぶツールです。ブラウザだけで動作し、専用サーバーやアカウントは必要ありません。
 
-公開サイト: [https://ikkk129.github.io/splatoon-random-weapon/](https://ikkk129.github.io/splatoon-random-weapon/)
+公開サイト: [https://fortisik129.github.io/splatoon-random-weapon/](https://ikkk129.github.io/splatoon-random-weapon/)
 
 ## 使い方
 
@@ -162,6 +162,6 @@ GitHub Pagesではリポジトリのルートを配信します。Jekyllのビ�
 
 ## 権利表記
 
-本アプリは非公式のファンツールです。Splatoonおよび関連する名称・画像などの権利は、それぞれの権利者に帰属します。画像やデータを追加・再配布する場合は、利用条件と権利関係を確認してください。
+本アプリは非公式のファンツールです。Splatoonおよび関連する名称・画像などの権利は、それぞれの権利者に帰属します。
 
 画面内の汎用UIアイコンはインラインSVGとして同梱しており、外部CDNへの接続は行いません。
