@@ -58,24 +58,26 @@ async function init() {
 }
 
 // 初回訪問ではアイコンが未キャッシュのため、100ms間隔で切り替わるガチャ演出に読み込みが間に合わない。
-// メインスレッドの空き時間だけを使って全アイコンを先読みし、初期表示を妨げずに演出を滑らかにする。
+// 初期表示が落ち着いた最初のアイドル時間に先読みを開始し、以降はダウンロード完了を合図に次を取得する。
+// 画像1枚ごとにアイドル待ちへ戻すと1周あたり約1秒の待ちが積み上がり、低速回線で完了が数倍遅くなる。
 function preloadWeaponIcons() {
   const icons = window.WEAPON_ICONS;
   if (!icons) return;
   const files = [...new Set(Object.values(icons).filter(file => typeof file === "string" && file))];
-  const schedule = typeof window.requestIdleCallback === "function"
-    ? callback => window.requestIdleCallback(callback, { timeout: ICON_PRELOAD_TIMEOUT })
-    : callback => window.setTimeout(callback, 200);
   let cursor = 0;
   const pump = () => {
     if (cursor >= files.length) return;
     const image = new Image();
     image.decoding = "async";
-    image.onload = image.onerror = () => schedule(pump);
+    image.onload = image.onerror = pump;
     image.src = getWeaponIconUrl(files[cursor]);
     cursor += 1;
   };
-  for (let i = 0; i < ICON_PRELOAD_CONCURRENCY; i += 1) schedule(pump);
+  const start = () => {
+    for (let i = 0; i < ICON_PRELOAD_CONCURRENCY; i += 1) pump();
+  };
+  if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(start, { timeout: ICON_PRELOAD_TIMEOUT });
+  else window.setTimeout(start, 200);
 }
 
 function cacheElements() {
