@@ -37,7 +37,7 @@ body::before {
 .ink-glow--pink { top: -20vw; right: -16vw; }
 .ink-glow--cyan { bottom: -8vw; left: -20vw; }
 
-.app-shell { position: relative; z-index: 1; display: grid; grid-template-columns: 300px minmax(0, 1fr); width: 100%; min-height: 100vh; transition: grid-template-columns .36s cubic-bezier(.22, 1, .36, 1); }
+.app-shell { position: relative; z-index: 1; display: grid; grid-template-columns: 258px minmax(0, 1fr); width: 100%; min-height: 100vh; transition: grid-template-columns .36s cubic-bezier(.22, 1, .36, 1); }
 .app-shell.is-sidebar-collapsed { grid-template-columns: 72px minmax(0, 1fr); }
 .sidebar-toggle-button { position: fixed; z-index: 25; left: 16px; bottom: 16px; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 9px; padding: 0; background: transparent; color: #8a99a8; cursor: pointer; transition: color .2s ease, transform .2s ease; }
 .sidebar-toggle-button:hover { background: transparent; color: var(--paper); transform: translateY(-1px); }
@@ -45,7 +45,7 @@ body::before {
 .sidebar-toggle-button .ui-icon { width: 18px; height: 18px; stroke-width: 1.8; transition: transform .36s cubic-bezier(.22, 1, .36, 1); }
 .sidebar-toggle-button.is-collapsed .ui-icon { transform: scaleX(-1); }
 .app-sidebar {
-  --sidebar-content-width: 268px;
+  --sidebar-content-width: 226px;
   position: sticky;
   top: 0;
   align-self: start;
@@ -418,8 +418,8 @@ dialog form > p { color: var(--muted); font-size: 15px; line-height: 1.7; }
 .dialog-confirm { border: 0; background: var(--accent); color: #fff; }
 
 @media (max-width: 1180px) {
-  .app-shell { grid-template-columns: 260px minmax(0, 1fr); }
-  .app-sidebar { --sidebar-content-width: 216px; }
+  .app-shell { grid-template-columns: 218px minmax(0, 1fr); }
+  .app-sidebar { --sidebar-content-width: 174px; }
   .app-shell.is-sidebar-collapsed { grid-template-columns: 72px minmax(0, 1fr); }
   main { padding-inline: 52px; }
   .content-header { min-height: 108px; padding-right: 0; }
