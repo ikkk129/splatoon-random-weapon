@@ -53,7 +53,7 @@ Splatoon 3のブキをランダムに抽選するPC・スマートフォン向�
 
 ## 5. ブキリスト
 
-- `weapon-list.json`の順番を維持してカテゴリごとに表示する。
+- `data/default-weapon-list.json`の順番を維持してカテゴリごとに表示する。
 - カテゴリ名の末尾が「系」の場合、画面上では「系」を省略する。
 - 各カテゴリに「対象数 / 総数」を表示する。
 - 初回表示では全カテゴリを閉じる。
@@ -122,21 +122,22 @@ Splatoon 3のブキをランダムに抽選するPC・スマートフォン向�
 ### 8.4 初期化
 
 - 3モードすべての除外だけを解除する操作を提供する。
-- 確認ダイアログ後、`weapon-list.json`へ完全に戻す操作を提供する。
+- 確認ダイアログ後、`data/default-weapon-list.json`へ完全に戻す操作を提供する。
 
 ## 9. ブラウザ保存と復旧
 
 - ブキリストと除外状態の保存キーは`ink-draw-state-v2`とする。
 - ガチャアニメーション設定の保存キーは`ink-draw-settings-v1`とする。
 - ブキリストと3モードの除外状態を変更のたびに`localStorage`へ保存する。
-- 保存済みデータが正常な場合は`weapon-list.json`より優先する。
-- 保存済みデータが不正・破損している場合は`weapon-list.json`から自動復旧し、復旧データを保存し直して通知する。
+- 保存済みデータが正常な場合は`data/default-weapon-list.json`より優先する。
+- 保存済みデータが不正・破損している場合は`data/default-weapon-list.json`から自動復旧し、復旧データを保存し直して通知する。
 - `localStorage`を利用できない場合は初期データで起動し、保存できないことを通知する。
 
 ## 10. ブキ画像
 
-- 画像は`_images/MainWeapons/`へ配置する。
-- 表示名とファイル名の対応は`weapon-icons.js`で管理する。
+- 画像は`assets/images/weapons/`へ配置する。
+- ブキ以外のUI画像は`assets/images/ui/`へ配置する。
+- 表示名とファイル名の対応は`assets/js/weapon-icons.js`で管理する。
 - ファイル名は英小文字・数字・ハイフンによるケバブケースを原則とする。
 - GitHub Pagesでの利用を考慮し、実ファイルと参照文字列の大文字・小文字を完全一致させる。
 - ブキリスト画像は`loading="lazy"`と`decoding="async"`を用いる。
@@ -155,22 +156,24 @@ Splatoon 3のブキをランダムに抽選するPC・スマートフォン向�
 ```text
 .
 ├── index.html
-├── style.css
-├── script.js
-├── weapon-list.json
-├── weapon-icons.js
 ├── README.md
-├── 要件定義.md
 ├── .gitignore
 ├── .nojekyll
-└── _images/
-    ├── MainWeapons/
-    ├── Gold-Capsule.png
-    ├── Shell-Out-Machine.png
-    ├── top-icon.png
-    └── yajirusi.png
+├── assets/
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   ├── app.js
+│   │   └── weapon-icons.js
+│   └── images/
+│       ├── weapons/
+│       └── ui/
+├── data/
+│   └── default-weapon-list.json
+└── docs/
+    └── requirements.md
 ```
 
 - リポジトリの`main`ブランチのルートをGitHub Pagesで公開する。
-- `_images`をそのまま配信するため`.nojekyll`を維持する。
+- Jekyllのビルドを走らせず静的ファイルをそのまま配信するため`.nojekyll`を維持する。
 - JavaScriptが無効、初期JSONが取得不能、または画像が欠落している場合でも、不正なコードを実行しない。

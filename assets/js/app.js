@@ -2,7 +2,7 @@
 
 const STORAGE_KEY = "ink-draw-state-v2";
 const SETTINGS_STORAGE_KEY = "ink-draw-settings-v1";
-const DEFAULT_DATA_URL = "weapon-list.json";
+const DEFAULT_DATA_URL = "data/default-weapon-list.json";
 const DRAW_SHUFFLE_COUNT = 7;
 const DRAW_SHUFFLE_INTERVAL = 100;
 const MIN_PLAYERS = 2;
@@ -861,7 +861,7 @@ function getWeaponIconFile(name) {
 }
 // 配信は軽量なWebPを優先し、デコードできない環境ではリポジトリに残した元PNGへ一度だけ切り替える。
 function getWeaponIconUrl(iconFile) {
-  return `_images/MainWeapons/${encodeURIComponent(iconFile.replace(/\.png$/i, ".webp"))}`;
+  return `assets/images/weapons/${encodeURIComponent(iconFile.replace(/\.png$/i, ".webp"))}`;
 }
 function attachWeaponIconFallback(image, iconFile) {
   image.addEventListener("error", () => {
@@ -870,7 +870,7 @@ function attachWeaponIconFallback(image, iconFile) {
       return;
     }
     image.dataset.iconFallback = "used";
-    image.src = `_images/MainWeapons/${encodeURIComponent(iconFile)}`;
+    image.src = `assets/images/weapons/${encodeURIComponent(iconFile)}`;
   });
 }
 function toCamel(value) { return value.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()); }

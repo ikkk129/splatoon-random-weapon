@@ -48,7 +48,7 @@ Splatoon 3のブキをランダムに選ぶ、PC・スマートフォン向け�
 - **JSONを読み込む**: ブキリストと除外状態を取り込みます。
 - **JSONを書き出す**: 現在のブキリストと除外状態を保存します。
 - **除外をすべて解除**: 3モードすべての除外を解除します。
-- **初期データに戻す**: `weapon-list.json`の初期状態へ戻します。
+- **初期データに戻す**: `data/default-weapon-list.json`の初期状態へ戻します。
 
 ブキリストと除外状態、ガチャアニメーション設定はブラウザの`localStorage`へ自動保存されます。保存データが破損している場合は初期データで自動復旧し、画面に通知します。別の端末やブラウザへ移す場合はJSONを書き出してください。
 
@@ -59,25 +59,27 @@ Splatoon 3のブキをランダムに選ぶ、PC・スマートフォン向け�
 ```text
 .
 ├── index.html
-├── style.css
-├── script.js
-├── weapon-list.json
-├── weapon-icons.js
 ├── README.md
-├── 要件定義.md
 ├── .gitignore
 ├── .nojekyll
-└── _images/
-    ├── MainWeapons/
-    ├── Gold-Capsule.png
-    ├── Shell-Out-Machine.png
-    ├── top-icon.png
-    └── yajirusi.png
+├── assets/
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   ├── app.js
+│   │   └── weapon-icons.js
+│   └── images/
+│       ├── weapons/
+│       └── ui/
+├── data/
+│   └── default-weapon-list.json
+└── docs/
+    └── requirements.md
 ```
 
 ### ローカル起動
 
-`weapon-list.json`を`fetch()`で読むため、`index.html`を直接開かずHTTPサーバーを使います。
+`data/default-weapon-list.json`を`fetch()`で読むため、`index.html`を直接開かずHTTPサーバーを使います。
 
 ```bash
 python -m http.server 4173
@@ -87,7 +89,7 @@ python -m http.server 4173
 
 ### データ形式
 
-`weapon-list.json`とインポート／エクスポートJSONは同じ形式です。
+`data/default-weapon-list.json`とインポート／エクスポートJSONは同じ形式です。
 
 ```json
 {
@@ -119,21 +121,23 @@ python -m http.server 4173
 
 ### ブキ画像
 
-ブキ画像は`_images/MainWeapons/`に置き、`weapon-icons.js`で表示名とファイル名を対応させます。
+ブキ画像は`assets/images/weapons/`に置き、`assets/js/weapon-icons.js`で表示名とファイル名を対応させます。
 
 ```js
 "スプラシューター": "splattershot.png"
 ```
 
-ファイル名は英小文字・数字・ハイフンのケバブケースに統一しています。GitHub Pagesはファイル名の大文字・小文字を区別するため、`weapon-icons.js`と実ファイルを完全一致させてください。対応がない場合も抽選はできますが、画像は表示されません。
+ファイル名は英小文字・数字・ハイフンのケバブケースに統一しています。GitHub Pagesはファイル名の大文字・小文字を区別するため、`assets/js/weapon-icons.js`と実ファイルを完全一致させてください。対応がない場合も抽選はできますが、画像は表示されません。
 
-配信には同名の`.webp`を使い、デコードできない環境では元のPNGへ自動で切り替えます。`weapon-icons.js`には`.png`のまま記載し、ブキ画像を追加・更新したら次のコマンドでWebPを生成してください。元のPNGは残したままになります。
+配信には同名の`.webp`を使い、デコードできない環境では元のPNGへ自動で切り替えます。`assets/js/weapon-icons.js`には`.png`のまま記載し、ブキ画像を追加・更新したら次のコマンドでWebPを生成してください。元のPNGは残したままになります。
 
 ```powershell
-magick mogrify -path _images/MainWeapons -format webp -quality 85 -define webp:method=6 -define webp:alpha-quality=100 _images/MainWeapons/*.png
+magick mogrify -path assets/images/weapons -format webp -quality 85 -define webp:method=6 -define webp:alpha-quality=100 assets/images/weapons/*.png
 ```
 
 ブキリストの画像はカテゴリを開いたときに遅延読み込みされます。加えて初期表示の完了後、`requestIdleCallback`でメインスレッドの空き時間に全アイコンを先読みするため、初回訪問でもガチャ演出中に画像が欠けません。
+
+ブキ以外のUI画像は`assets/images/ui/`に置きます。`index.html`から`.webp`を直接参照するため、PNGはWebPを再生成するための元データとして残しています。
 
 ### ブラウザ保存
 
@@ -143,7 +147,7 @@ magick mogrify -path _images/MainWeapons -format webp -quality 85 -define webp:m
 
 ガチャアニメーション設定は別キー`ink-draw-settings-v1`に保存され、保存データがない場合はONで起動します。
 
-既存の保存データは`weapon-list.json`より優先されます。初期データ変更を確認するときは、画面の「初期データに戻す」を実行してください。
+既存の保存データは`data/default-weapon-list.json`より優先されます。初期データ変更を確認するときは、画面の「初期データに戻す」を実行してください。
 
 ### 公開前チェック
 
@@ -154,7 +158,7 @@ magick mogrify -path _images/MainWeapons -format webp -quality 85 -define webp:m
 5. 画像パスの大文字・小文字が一致していることを確認する。
 6. `git status`で意図しないファイルが含まれていないことを確認する。
 
-GitHub Pagesではリポジトリのルートを配信します。`_images`をJekyll処理から除外しないため、ルートの`.nojekyll`は削除しないでください。
+GitHub Pagesではリポジトリのルートを配信します。Jekyllのビルドを走らせないため、ルートの`.nojekyll`は削除しないでください。
 
 ## 権利表記
 
