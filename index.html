@@ -191,13 +191,20 @@
     </form>
   </dialog>
 
-  <dialog id="exclude-all-dialog" aria-labelledby="exclude-all-dialog-title" aria-describedby="exclude-all-dialog-description">
+  <dialog id="exclude-all-dialog" class="confirmation-dialog" aria-labelledby="exclude-all-dialog-title" aria-describedby="exclude-all-dialog-description">
     <form method="dialog">
-      <h2 id="exclude-all-dialog-title">ブキをすべて除外しますか？</h2>
-      <p id="exclude-all-dialog-description">このモードのブキがすべて抽選対象から外れます。あとで解除できます。</p>
+      <div class="confirmation-dialog__header">
+        <h2 id="exclude-all-dialog-title">ブキをすべて除外しますか？</h2>
+        <button value="cancel" class="dialog-close-button" type="submit" aria-label="閉じる">
+          <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg>
+        </button>
+      </div>
+      <div class="confirmation-dialog__body">
+        <p id="exclude-all-dialog-description">このモードのブキがすべて抽選対象から外れます。あとで解除できます。</p>
+      </div>
       <div class="dialog-actions">
-        <button value="cancel" class="utility-button">キャンセル</button>
-        <button value="confirm" class="dialog-confirm">すべて除外する</button>
+        <button value="cancel" class="utility-button" type="submit" autofocus>キャンセル</button>
+        <button value="confirm" class="dialog-confirm" type="submit">すべて除外する</button>
       </div>
     </form>
   </dialog>
